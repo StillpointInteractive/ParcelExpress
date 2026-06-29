@@ -405,7 +405,7 @@ Transform:
   m_GameObject: {fileID: 449270929}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.376, z: 0.534}
+  m_LocalPosition: {x: 0, y: 0.103, z: 0.534}
   m_LocalScale: {x: 0.24, y: 0.24, z: 0.24}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -759,6 +759,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkSpeed: 5
   mouseSensitivity: 0.1
+  jumpForce: 4
   cameraTransform: {fileID: 330585546}
 --- !u!143 &1469231518
 CharacterController:
