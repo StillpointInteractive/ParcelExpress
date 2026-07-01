@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 3
   tags:
   - Parcel
+  - SmallParcel
+  - MediumParcel
+  - LargeParcel
+  - OversizedParcel
   layers:
   - Default
   - TransparentFX

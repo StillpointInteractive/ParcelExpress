@@ -13,7 +13,12 @@ public class PlayerMovement : MonoBehaviour
     private float xRotation = 0f;
     private float verticalVelocity;
 
+    private bool isSprinting = false;
+
     [SerializeField] private float walkSpeed = 5f;
+    [SerializeField] private float sprintSpeed = 10f;
+    [SerializeField] private float currentSpeed;
+
     [SerializeField] private float mouseSensitivity = 0.1f;
     [SerializeField] private float jumpForce = 4f;
 
@@ -43,6 +48,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        
+
         moveInput = playerControls.Player.Move.ReadValue<Vector2>();
         lookInput = playerControls.Player.Look.ReadValue<Vector2>();
         
@@ -55,23 +62,28 @@ public class PlayerMovement : MonoBehaviour
             verticalVelocity = -2;
         }
 
-        if(playerControls.Player.Jump.WasPressedThisFrame() && controller.isGrounded)
+        if(playerControls.Player.Jump.WasPressedThisFrame())
         {
             verticalVelocity = jumpForce;
         }
 
+        if (controller.isGrounded && playerControls.Player.Sprint.IsPressed()) isSprinting = true;
+        else isSprinting = false;
+
+        currentSpeed = isSprinting ? sprintSpeed : walkSpeed;
+
 
         Vector3 moveDirection = transform.right * moveInput.x
-            + transform.forward * moveInput.y;
+                + transform.forward * moveInput.y;
         moveDirection.y = verticalVelocity;
 
         transform.Rotate(Vector3.up * lookInput.x * mouseSensitivity);
 
         xRotation -= lookInput.y * mouseSensitivity;
-        xRotation = Mathf.Clamp(xRotation, -60f, 60f);
+        xRotation = Mathf.Clamp(xRotation, -50f, 50f);
         cameraTransform.localRotation = Quaternion.Euler(xRotation, 0, 0);
        
-        controller.Move(moveDirection * walkSpeed * Time.deltaTime);
+        controller.Move(moveDirection * currentSpeed * Time.deltaTime);
 
        
 

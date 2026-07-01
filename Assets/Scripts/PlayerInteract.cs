@@ -3,7 +3,10 @@ using UnityEngine.InputSystem;
 
 public class PlayerInteract : MonoBehaviour
 {
-    [SerializeField] private Transform parcelHoldPoint;
+    [SerializeField] private Transform smallParcelHoldPoint;
+    [SerializeField] private Transform mediumParcelHoldPoint;
+    [SerializeField] private Transform largeParcelHoldPoint;
+
     [SerializeField] private float interactRange = 5f;
 
    
@@ -15,12 +18,9 @@ public class PlayerInteract : MonoBehaviour
 
     private void Update()
     {
-        if (Keyboard.current.eKey.wasPressedThisFrame)
-        {
-            TryPickUp();
-           
-        }
-        Debug.DrawRay(cameraPos.transform.position, cameraPos.transform.forward * interactRange, Color.red);
+        if (Keyboard.current.eKey.wasPressedThisFrame) TryPickUp();
+  
+        if (Keyboard.current.qKey.wasPressedThisFrame && heldParcel != null) Drop(heldParcel);
     }
 
     private void TryPickUp()
@@ -42,17 +42,49 @@ public class PlayerInteract : MonoBehaviour
             if (parcel != null && !parcel.isPickedUp)
             {
                 Pickup(parcel);
-               
+               parcel.isPickedUp = true;
             }
         }
     }
 
     private void Pickup(Parcel parcel)
     {
-        parcel.transform.position = parcelHoldPoint.position;
 
-        parcel.transform.parent = parcelHoldPoint;
+        if(parcel.CompareTag("SmallParcel"))
+        {
+            parcel.transform.position = smallParcelHoldPoint.position;
+            parcel.transform.parent = smallParcelHoldPoint;
+           
+        }
+        else if (parcel.CompareTag("MediumParcel"))
+        {
+            parcel.transform.position = mediumParcelHoldPoint.position;
+            parcel.transform.parent = mediumParcelHoldPoint;
+        }
+        else if (parcel.CompareTag("LargeParcel"))
+        {
+            parcel.transform.position = largeParcelHoldPoint.position;
+            parcel.transform.parent = largeParcelHoldPoint;
+        }
+        else if (parcel.CompareTag("OversizedParcel"))
+        {
+            parcel.transform.position = largeParcelHoldPoint.position;
+            parcel.transform.parent = largeParcelHoldPoint;
+        }
 
-        parcel.transform.rotation = parcelHoldPoint.rotation;
+        parcel.transform.forward = transform.forward;
+       
+
+
+
+    }
+
+    private void Drop(Parcel parcel)
+    {
+        parcel.isPickedUp = false;
+
+        parcel.transform.SetParent(null);
+
+        heldParcel = null;
     }
 }
