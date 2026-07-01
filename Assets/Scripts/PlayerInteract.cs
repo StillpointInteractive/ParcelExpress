@@ -33,16 +33,17 @@ public class PlayerInteract : MonoBehaviour
         if(Physics.Raycast(ray, out RaycastHit hit, interactRange))
         {
             Parcel parcel = hit.collider.GetComponent<Parcel>();
-            
+
+
+            if (parcel != null && parcel.hasBeenDelivered) return;
 
             if (parcel != null) heldParcel = parcel;
-           
-            if(heldParcel != null) Debug.Log("NoLongerNull");
+
 
             if (parcel != null && !parcel.isPickedUp)
             {
                 Pickup(parcel);
-               parcel.isPickedUp = true;
+                parcel.isPickedUp = true;
             }
         }
     }

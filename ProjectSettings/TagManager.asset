@@ -9,6 +9,7 @@ TagManager:
   - MediumParcel
   - LargeParcel
   - OversizedParcel
+  - DeliveryZone
   layers:
   - Default
   - TransparentFX

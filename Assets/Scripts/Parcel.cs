@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class Parcel : MonoBehaviour
 {
-    
+
     public bool isPickedUp = false;
+    public bool hasBeenDelivered = false;
 
     private Rigidbody rb;
 
