@@ -8,7 +8,9 @@ public class DeliveryZone : MonoBehaviour
 
         if (parcel != null && !parcel.isPickedUp)
         {
-            parcel.hasBeenDelivered = true;
+            parcel.Deliver();
+
+            
         }
     }
 }

@@ -13,11 +13,17 @@ public class PlayerMovement : MonoBehaviour
     private float xRotation = 0f;
     private float verticalVelocity;
 
-    private bool isSprinting = false;
+    public bool isSprinting = false;
+    public bool isWalking = false;
 
+    [SerializeField] private float idleSpeed = 0f;
     [SerializeField] private float walkSpeed = 5f;
     [SerializeField] private float sprintSpeed = 10f;
     [SerializeField] private float currentSpeed;
+    [SerializeField] private float targetSpeed;
+    [SerializeField] private float sprintAcceleration = 12f;
+    [SerializeField] private float sprintDeceleration = 20f;
+    [SerializeField] private float accelOrDeceleration;
 
     [SerializeField] private float mouseSensitivity = 0.1f;
     [SerializeField] private float jumpForce = 4f;
@@ -39,6 +45,8 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+
+        currentSpeed = walkSpeed;
     }
 
     private void OnDisable()
@@ -48,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        
+       
 
         moveInput = playerControls.Player.Move.ReadValue<Vector2>();
         lookInput = playerControls.Player.Look.ReadValue<Vector2>();
@@ -57,12 +65,10 @@ public class PlayerMovement : MonoBehaviour
         verticalVelocity += Physics.gravity.y * Time.deltaTime;
 
 
-        if (controller.isGrounded && verticalVelocity < 0)
-        {
-            verticalVelocity = -2;
-        }
+        if (controller.isGrounded && verticalVelocity < 0) verticalVelocity = -2;
+        
 
-        if(playerControls.Player.Jump.WasPressedThisFrame())
+        if(playerControls.Player.Jump.WasPressedThisFrame() && controller.isGrounded)
         {
             verticalVelocity = jumpForce;
         }
@@ -70,11 +76,24 @@ public class PlayerMovement : MonoBehaviour
         if (controller.isGrounded && playerControls.Player.Sprint.IsPressed()) isSprinting = true;
         else isSprinting = false;
 
-        currentSpeed = isSprinting ? sprintSpeed : walkSpeed;
+        if (moveInput != Vector2.zero) isWalking = true;
+        else isWalking = false;
+
+
+
+        if (isSprinting) targetSpeed = sprintSpeed;
+        else if(isWalking) targetSpeed = walkSpeed;
+        else targetSpeed = idleSpeed;
+
+        if (currentSpeed < targetSpeed) accelOrDeceleration = sprintAcceleration;
+
+        else if (currentSpeed > targetSpeed) accelOrDeceleration = sprintDeceleration;
+       
 
 
         Vector3 moveDirection = transform.right * moveInput.x
                 + transform.forward * moveInput.y;
+
         moveDirection.y = verticalVelocity;
 
         transform.Rotate(Vector3.up * lookInput.x * mouseSensitivity);
@@ -82,12 +101,14 @@ public class PlayerMovement : MonoBehaviour
         xRotation -= lookInput.y * mouseSensitivity;
         xRotation = Mathf.Clamp(xRotation, -50f, 50f);
         cameraTransform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+
+        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accelOrDeceleration * Time.deltaTime);
        
         controller.Move(moveDirection * currentSpeed * Time.deltaTime);
 
+
        
 
-        
     }
 
 }

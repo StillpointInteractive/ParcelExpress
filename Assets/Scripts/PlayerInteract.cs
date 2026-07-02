@@ -44,6 +44,8 @@ public class PlayerInteract : MonoBehaviour
             {
                 Pickup(parcel);
                 parcel.isPickedUp = true;
+
+                GameManager.Instance.StartTimer(60);
             }
         }
     }

@@ -5,6 +5,7 @@ public class Parcel : MonoBehaviour
 {
 
     public bool isPickedUp = false;
+
     public bool hasBeenDelivered = false;
 
     private Rigidbody rb;
@@ -18,5 +19,15 @@ public class Parcel : MonoBehaviour
     {
         if (isPickedUp) rb.isKinematic = true;
         else rb.isKinematic = false;
+
+
+    }
+
+    public void Deliver()
+    {
+        if (hasBeenDelivered) return;
+        hasBeenDelivered = true;
+
+        GameManager.Instance.ParcelDelivered(this);
     }
 }
