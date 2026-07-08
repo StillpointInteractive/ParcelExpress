@@ -1,5 +1,6 @@
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -15,8 +16,11 @@ public class PlayerMovement : MonoBehaviour
 
     public bool isSprinting = false;
     public bool isWalking = false;
+    public bool isCrouching = false;
+    public bool isSliding = false;
 
     [SerializeField] private float idleSpeed = 0f;
+    [SerializeField] private float crouchMovementSpeed = 2.5f;
     [SerializeField] private float walkSpeed = 5f;
     [SerializeField] private float sprintSpeed = 10f;
     [SerializeField] private float currentSpeed;
@@ -24,6 +28,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float sprintAcceleration = 12f;
     [SerializeField] private float sprintDeceleration = 20f;
     [SerializeField] private float accelOrDeceleration;
+    [SerializeField] private float standingHeight = 2f;
+    [SerializeField] private float crouchingHeight = 1.2f;
+    [SerializeField] private float crouchSpeed = 8f;
+
+    [SerializeField] private float standingCameraHeight = 0.85f;
+    [SerializeField] private float crouchingCameraHeight = 0.35f;
+    [SerializeField] private Vector3 standingCenter = new Vector3(0f, 1f, 0f);
+    [SerializeField] private Vector3 crouchingCenter = new Vector3(0f, 0.6f, 0f);
 
     [SerializeField] private float mouseSensitivity = 0.1f;
     [SerializeField] private float jumpForce = 4f;
@@ -47,6 +59,13 @@ public class PlayerMovement : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         currentSpeed = idleSpeed;
+
+        standingHeight = controller.height;
+
+        Vector3 cameraPos = cameraTransform.localPosition;
+        standingCameraHeight = cameraPos.y;
+
+        cameraTransform.localPosition = cameraPos;
     }
 
     private void OnDisable()
@@ -73,17 +92,31 @@ public class PlayerMovement : MonoBehaviour
             verticalVelocity = jumpForce;
         }
 
-        if (controller.isGrounded && playerControls.Player.Sprint.IsPressed()) isSprinting = true;
-        else isSprinting = false;
+        if(playerControls.Player.Crouch.IsPressed() && !isSprinting) isCrouching = true;
+
+        else isCrouching = false;
+
+        if (playerControls.Player.Crouch.IsPressed() && isSprinting) isSliding = true;
+
+        else isSliding = false;
+
+        isSprinting = controller.isGrounded && moveInput != Vector2.zero && playerControls.Player.Sprint.IsPressed();
+
+
 
         if (moveInput != Vector2.zero && !isSprinting) isWalking = true;
         else isWalking = false;
 
 
 
-        if (isSprinting) targetSpeed = sprintSpeed;
-        else if(isWalking) targetSpeed = walkSpeed;
-        else targetSpeed = idleSpeed;
+        if (isCrouching)
+            targetSpeed = crouchMovementSpeed; 
+        else if (isSprinting)
+            targetSpeed = sprintSpeed;
+        else if (isWalking)
+            targetSpeed = walkSpeed;
+        else
+            targetSpeed = idleSpeed;
 
         if (currentSpeed < targetSpeed) accelOrDeceleration = sprintAcceleration;
 
@@ -103,6 +136,21 @@ public class PlayerMovement : MonoBehaviour
         cameraTransform.localRotation = Quaternion.Euler(xRotation, 0, 0);
 
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accelOrDeceleration * Time.deltaTime);
+
+        float targetHeight = isCrouching ? crouchingHeight : standingHeight;
+
+        controller.height = Mathf.Lerp(controller.height, targetHeight, crouchSpeed * Time.deltaTime);
+
+        //Vector3 targetCenter = isCrouching ? crouchingCenter : standingCenter;
+
+        //controller.center = Vector3.Lerp(controller.center, targetCenter, crouchSpeed * Time.deltaTime);
+
+        float targetCameraHeight = isCrouching ? crouchingCameraHeight : standingCameraHeight;
+
+        Vector3 cameraPosition = cameraTransform.localPosition;
+
+        cameraPosition.y = Mathf.Lerp(cameraPosition.y, targetCameraHeight, crouchSpeed * Time.deltaTime);
+
        
         controller.Move(moveDirection * currentSpeed * Time.deltaTime);
 
