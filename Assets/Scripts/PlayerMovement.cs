@@ -46,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
 
-        currentSpeed = walkSpeed;
+        currentSpeed = idleSpeed;
     }
 
     private void OnDisable()
@@ -76,7 +76,7 @@ public class PlayerMovement : MonoBehaviour
         if (controller.isGrounded && playerControls.Player.Sprint.IsPressed()) isSprinting = true;
         else isSprinting = false;
 
-        if (moveInput != Vector2.zero) isWalking = true;
+        if (moveInput != Vector2.zero && !isSprinting) isWalking = true;
         else isWalking = false;
 
 

@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int score = 0;
 
     [SerializeField] private float timer;
+    [SerializeField] private float maxTime = 180f;
     [SerializeField] private bool timerRunning;
 
     public TMP_Text timertxt;
@@ -43,14 +45,21 @@ public class GameManager : MonoBehaviour
 
        
     }
+    public void MissionFailed()
+    {
+       
+        // GameOver
+    }
 
     private void Update()
     {
 
-        timertxt.text = "Time:  " + Mathf.RoundToInt(timer);
+        timertxt.text = "Time:  " + Mathf.RoundToInt(Mathf.Clamp(timer, 0f, maxTime));
         scoretxt.text = "Score: " + score;
 
         if (timerRunning) timer -= Time.deltaTime;
+
+        
     }
 
 

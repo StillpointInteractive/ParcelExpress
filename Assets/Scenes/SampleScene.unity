@@ -290,6 +290,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPickedUp: 0
   hasBeenDelivered: 0
+  hasBeenPickedUp: 0
 --- !u!65 &34695096
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -408,6 +409,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPickedUp: 0
   hasBeenDelivered: 0
+  hasBeenPickedUp: 0
 --- !u!4 &158809652
 Transform:
   m_ObjectHideFlags: 0
@@ -640,6 +642,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPickedUp: 0
   hasBeenDelivered: 0
+  hasBeenPickedUp: 0
 --- !u!65 &293332012
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -843,6 +846,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3e54a98ade86214bb2e891643f1b8e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  idleBobSpeed: 2
+  walkBobSpeed: 8
+  sprintBobSpeed: 14
+  currentBobSpeed: 2
+  idleBobHeight: 0.01
+  walkBobHeight: 0.02
+  sprintBHeight: 0.12
+  currentBobHeight: 0
+  idleBobWidth: 0.02
+  walkBobWidth: 0.04
+  sprintBobWidth: 0.09
+  currentBobWidth: 0
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -1458,6 +1473,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPickedUp: 0
   hasBeenDelivered: 0
+  hasBeenPickedUp: 0
 --- !u!4 &1121024109
 Transform:
   m_ObjectHideFlags: 0
@@ -1775,6 +1791,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPickedUp: 0
   hasBeenDelivered: 0
+  hasBeenPickedUp: 0
 --- !u!65 &1355066610
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1878,7 +1895,7 @@ MonoBehaviour:
   isSprinting: 0
   isWalking: 0
   idleSpeed: 0
-  walkSpeed: 5
+  walkSpeed: 3
   sprintSpeed: 10
   currentSpeed: 0
   targetSpeed: 0
@@ -2030,6 +2047,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   score: 0
   timer: 0
+  maxTime: 180
   timerRunning: 0
   timertxt: {fileID: 1227851242}
   scoretxt: {fileID: 9859673}

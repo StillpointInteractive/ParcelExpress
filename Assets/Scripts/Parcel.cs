@@ -8,6 +8,8 @@ public class Parcel : MonoBehaviour
 
     public bool hasBeenDelivered = false;
 
+    public bool hasBeenPickedUp = false;
+
     private Rigidbody rb;
 
     private void Awake()
@@ -17,7 +19,11 @@ public class Parcel : MonoBehaviour
 
     private void Update()
     {
-        if (isPickedUp) rb.isKinematic = true;
+        if (isPickedUp)
+        {
+            rb.isKinematic = true;
+            hasBeenPickedUp = true;
+        }
         else rb.isKinematic = false;
 
 
