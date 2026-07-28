@@ -1,12 +1,12 @@
-using System.Linq;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
+
 
 public class PlayerMovement : MonoBehaviour
 {
 
     private CharacterController controller;
     private PlayerControls playerControls;
+
 
     private Vector2 moveInput;
     private Vector2 lookInput;
@@ -31,18 +31,31 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float standingHeight = 2f;
     [SerializeField] private float crouchingHeight = 1.2f;
     [SerializeField] private float crouchSpeed = 8f;
+    [SerializeField] private float standCheckRadius = 0.3f;
+    [SerializeField] private LayerMask standCheckLayers;
 
     [SerializeField] private float standingCameraHeight = 0.85f;
-    [SerializeField] private float crouchingCameraHeight = 0.35f;
-    [SerializeField] private Vector3 standingCenter = new Vector3(0f, 1f, 0f);
-    [SerializeField] private Vector3 crouchingCenter = new Vector3(0f, 0.6f, 0f);
+    [SerializeField] private float crouchingCameraHeight = 0.15f;
+    float targetCameraHeight;
+
+   [SerializeField] private Vector3 standingCenter = Vector3.zero;
+
 
     [SerializeField] private float mouseSensitivity = 0.1f;
     [SerializeField] private float jumpForce = 4f;
 
     [SerializeField] private Transform cameraTransform;
-    
-    
+
+    [Header("Slide")]
+    [SerializeField] private float slideStartSpeed = 12f;
+    [SerializeField] private float slideFriction = 8f;
+    [SerializeField] private float slideMinimumSpeed = 4f;
+    [SerializeField] private float maxSlideTime = 1.2f;
+
+    private Vector3 slideDirection;
+    private float slideSpeed;
+    private float slideTimer;
+
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -62,6 +75,8 @@ public class PlayerMovement : MonoBehaviour
 
         standingHeight = controller.height;
 
+        standingCenter = controller.center;
+
         Vector3 cameraPos = cameraTransform.localPosition;
         standingCameraHeight = cameraPos.y;
 
@@ -73,90 +88,207 @@ public class PlayerMovement : MonoBehaviour
         playerControls.Disable();
     }
 
+
     private void Update()
     {
-       
+        GetInput();
 
+        HandleGravity();
+        HandleJump();
+
+        HandleMovementStates();
+
+        HandleCrouch();
+
+        HandleMovement();
+
+        HandleLook();
+
+        HandleCamera();
+
+
+    }
+
+    private void GetInput()
+    {
         moveInput = playerControls.Player.Move.ReadValue<Vector2>();
         lookInput = playerControls.Player.Look.ReadValue<Vector2>();
-        
+    }
 
+    private void HandleGravity()
+    {
         verticalVelocity += Physics.gravity.y * Time.deltaTime;
 
+        if (controller.isGrounded && verticalVelocity < 0)
+            verticalVelocity = -2;
+    }
 
-        if (controller.isGrounded && verticalVelocity < 0) verticalVelocity = -2;
-        
+    private void HandleJump()
+    {
+        if (!controller.isGrounded)
+            return;
 
-        if(playerControls.Player.Jump.WasPressedThisFrame() && controller.isGrounded)
+        if (playerControls.Player.Jump.WasPressedThisFrame())
         {
             verticalVelocity = jumpForce;
         }
+    }
 
-        if(playerControls.Player.Crouch.IsPressed() && !isSprinting) isCrouching = true;
+    private void HandleMovementStates()
+    {
+        bool hasMovementInput = moveInput != Vector2.zero;
+        bool sprintHeld = playerControls.Player.Sprint.IsPressed();
+        bool crouchHeld = playerControls.Player.Crouch.IsPressed();
 
-        else isCrouching = false;
-
-        if (playerControls.Player.Crouch.IsPressed() && isSprinting) isSliding = true;
-
-        else isSliding = false;
-
-        isSprinting = controller.isGrounded && moveInput != Vector2.zero && playerControls.Player.Sprint.IsPressed();
-
+        isSprinting = controller.isGrounded && hasMovementInput && sprintHeld;
 
 
-        if (moveInput != Vector2.zero && !isSprinting) isWalking = true;
-        else isWalking = false;
+        if (controller.isGrounded && hasMovementInput && sprintHeld && crouchHeld && !isSliding) StartSlide();
 
 
 
-        if (isCrouching)
-            targetSpeed = crouchMovementSpeed; 
+        isWalking = controller.isGrounded && hasMovementInput && !isSprinting && !isCrouching;
+
+      
+    }
+
+    private void HandleMovement()
+    {
+        if (isSliding)
+        {
+            slideSpeed -= slideFriction * Time.deltaTime;
+
+            if (slideSpeed <= slideMinimumSpeed)
+            {
+                StopSliding();
+            }
+        }
+
         else if (isSprinting)
             targetSpeed = sprintSpeed;
+
+        else if (isCrouching)
+            targetSpeed = crouchMovementSpeed;
+
         else if (isWalking)
             targetSpeed = walkSpeed;
+
         else
             targetSpeed = idleSpeed;
 
-        if (currentSpeed < targetSpeed) accelOrDeceleration = sprintAcceleration;
+        if (currentSpeed < targetSpeed)
+            accelOrDeceleration = sprintAcceleration;
+        else if (currentSpeed > targetSpeed)
+            accelOrDeceleration = sprintDeceleration;
 
-        else if (currentSpeed > targetSpeed) accelOrDeceleration = sprintDeceleration;
-       
+        currentSpeed = Mathf.MoveTowards(
+            currentSpeed,
+            targetSpeed,
+            accelOrDeceleration * Time.deltaTime);
 
+        Vector3 moveDirection = transform.right * moveInput.x + transform.forward * moveInput.y;
 
-        Vector3 moveDirection = transform.right * moveInput.x
-                + transform.forward * moveInput.y;
+        Vector3 horizontalVelocity;
 
-        moveDirection.y = verticalVelocity;
+        if (isSliding)
+        {
+            horizontalVelocity = slideDirection * slideSpeed;
+        }
+        else
+        {
+            horizontalVelocity = moveDirection * currentSpeed;
+        }
 
-        transform.Rotate(Vector3.up * lookInput.x * mouseSensitivity);
+        Vector3 verticalVelocityVector = Vector3.up * verticalVelocity;
 
+        Vector3 finalVelocity = horizontalVelocity + verticalVelocityVector;
+
+        controller.Move(finalVelocity * Time.deltaTime);
+    }
+
+    private void HandleLook()
+    {
+        transform.Rotate(Vector3.up * lookInput.x * mouseSensitivity); 
         xRotation -= lookInput.y * mouseSensitivity;
-        xRotation = Mathf.Clamp(xRotation, -50f, 50f);
+        xRotation = Mathf.Clamp(xRotation, -50f, 50f); 
         cameraTransform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+    }
 
-        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accelOrDeceleration * Time.deltaTime);
+    private void HandleCrouch()
+    {
+        if (playerControls.Player.Crouch.IsPressed() && !isSprinting)
+        {
+            isCrouching = true;
+        }
+        else
+        {
+            isCrouching = !CanStand();
+        }
 
         float targetHeight = isCrouching ? crouchingHeight : standingHeight;
 
         controller.height = Mathf.Lerp(controller.height, targetHeight, crouchSpeed * Time.deltaTime);
 
-        //Vector3 targetCenter = isCrouching ? crouchingCenter : standingCenter;
+        Vector3 targetCenter = standingCenter;
 
-        //controller.center = Vector3.Lerp(controller.center, targetCenter, crouchSpeed * Time.deltaTime);
+        float heightDifference = standingHeight - targetHeight;
 
-        float targetCameraHeight = isCrouching ? crouchingCameraHeight : standingCameraHeight;
+        targetCenter.y -= heightDifference / 2f;
+
+        controller.center = Vector3.Lerp(controller.center, targetCenter, crouchSpeed * Time.deltaTime);
+
+    }
+    private bool CanStand()
+    {
+        Vector3 standCheckPosition = transform.position + standingCenter + Vector3.up * (standingHeight / 2f);
+  
+
+        return !Physics.CheckSphere(standCheckPosition,standCheckRadius,standCheckLayers);
+        
+    }
+
+    private void HandleCamera()
+    {
+
+         targetCameraHeight = isCrouching ? crouchingCameraHeight : standingCameraHeight;
 
         Vector3 cameraPosition = cameraTransform.localPosition;
 
         cameraPosition.y = Mathf.Lerp(cameraPosition.y, targetCameraHeight, crouchSpeed * Time.deltaTime);
 
-       
-        controller.Move(moveDirection * currentSpeed * Time.deltaTime);
-
-
-       
-
+        cameraTransform.localPosition = cameraPosition;
     }
 
+
+
+    private void StartSlide()
+    {
+        isSliding = true;
+        isCrouching = true;
+
+        slideDirection = transform.forward;
+        slideSpeed = currentSpeed;
+
+        slideSpeed -= slideFriction * Time.deltaTime;
+
+        Vector3 cameraPosition = cameraTransform.localPosition;
+
+        cameraPosition.y = Mathf.Lerp(cameraPosition.y, targetCameraHeight, crouchSpeed * Time.deltaTime);
+
+        cameraTransform.localPosition = cameraPosition;
+
+        Debug.Log("Slide started");
+    }
+
+    private void StopSliding()
+    {
+        isSliding = false;
+
+        slideSpeed  = 0;
+
+        Debug.Log("Slide Ended");
+    }
 }
+
+
+

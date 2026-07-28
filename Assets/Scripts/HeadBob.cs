@@ -31,8 +31,6 @@ public class HeadBob : MonoBehaviour
     private void Start()
     {
         startPosition = transform.localPosition;
-
-       
     }
 
     private void Update()
