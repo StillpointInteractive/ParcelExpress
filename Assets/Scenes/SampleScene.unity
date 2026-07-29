@@ -1923,9 +1923,11 @@ MonoBehaviour:
   jumpForce: 4
   cameraTransform: {fileID: 330585546}
   slideStartSpeed: 12
-  slideFriction: 8
+  slideSpeedBoost: 2
+  slideFriction: 10
   slideMinimumSpeed: 4
   maxSlideTime: 1.2
+  slideSpeed: 0
 --- !u!143 &1469231518
 CharacterController:
   m_ObjectHideFlags: 0

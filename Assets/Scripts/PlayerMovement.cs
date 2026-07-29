@@ -48,12 +48,17 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Slide")]
     [SerializeField] private float slideStartSpeed = 12f;
+    [SerializeField] private float slideSpeedBoost = 1.5f;
+    [SerializeField] private float slideSensitivity;
+    [SerializeField] private float slideSensMultiplpication = 0.2f;
     [SerializeField] private float slideFriction = 8f;
-    [SerializeField] private float slideMinimumSpeed = 4f;
+    [SerializeField] private float slideMinimumSpeed = 1f;
     [SerializeField] private float maxSlideTime = 1.2f;
+    
 
     private Vector3 slideDirection;
-    private float slideSpeed;
+    private Vector2 slideInput = new Vector2(0, 1);
+    [SerializeField] private float slideSpeed;
     private float slideTimer;
 
     private void Awake()
@@ -143,7 +148,7 @@ public class PlayerMovement : MonoBehaviour
         isSprinting = controller.isGrounded && hasMovementInput && sprintHeld;
 
 
-        if (controller.isGrounded && hasMovementInput && sprintHeld && crouchHeld && !isSliding) StartSlide();
+        if(controller.isGrounded && hasMovementInput && sprintHeld && crouchHeld && !isSliding) StartSlide();
 
 
 
@@ -159,6 +164,11 @@ public class PlayerMovement : MonoBehaviour
             slideSpeed -= slideFriction * Time.deltaTime;
 
             if (slideSpeed <= slideMinimumSpeed)
+            {
+                StopSliding();
+            }
+
+            if(!playerControls.Player.Crouch.IsPressed())
             {
                 StopSliding();
             }
@@ -188,11 +198,12 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 moveDirection = transform.right * moveInput.x + transform.forward * moveInput.y;
 
+        Debug.Log(moveInput);
         Vector3 horizontalVelocity;
 
         if (isSliding)
         {
-            horizontalVelocity = slideDirection * slideSpeed;
+            horizontalVelocity = slideDirection + moveDirection * slideSpeed;
         }
         else
         {
@@ -208,15 +219,29 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleLook()
     {
-        transform.Rotate(Vector3.up * lookInput.x * mouseSensitivity); 
-        xRotation -= lookInput.y * mouseSensitivity;
+        if (!isSliding)
+        {
+            transform.Rotate(Vector3.up * lookInput.x * mouseSensitivity);
+            xRotation -= lookInput.y * mouseSensitivity;
+        }
+        else
+        { 
+            transform.Rotate(Vector3.up * lookInput.x * slideSensitivity);
+            xRotation -= lookInput.y * slideSensitivity;
+        }
+
+          
         xRotation = Mathf.Clamp(xRotation, -50f, 50f); 
         cameraTransform.localRotation = Quaternion.Euler(xRotation, 0, 0);
     }
 
     private void HandleCrouch()
     {
-        if (playerControls.Player.Crouch.IsPressed() && !isSprinting)
+        if(isSliding)
+        {
+            isCrouching = true;
+        }
+        else if (playerControls.Player.Crouch.IsPressed() && !isSprinting)
         {
             isCrouching = true;
         }
@@ -263,11 +288,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void StartSlide()
     {
+
+        if (moveInput != slideInput) return;
         isSliding = true;
         isCrouching = true;
 
         slideDirection = transform.forward;
         slideSpeed = currentSpeed;
+        slideSpeed *= slideSpeedBoost;
+        slideSensitivity = mouseSensitivity * slideSensMultiplpication;
 
         slideSpeed -= slideFriction * Time.deltaTime;
 
