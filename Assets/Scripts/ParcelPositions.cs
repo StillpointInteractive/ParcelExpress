@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class ParcelPositions : MonoBehaviour
 {
-    [SerializeField] private Transform parcelPositionHigh;
-    [SerializeField] private Transform parcelPositionLow;
+    [SerializeField] private Vector3 parcelPositionHigh;
+    [SerializeField] private Vector3 parcelPositionLow;
     [SerializeField] private Transform currentParcelTransform;
 
     [SerializeField] private bool isCrouching;
@@ -16,8 +16,8 @@ public class ParcelPositions : MonoBehaviour
     }
     void Start()
     {
-        parcelPositionHigh.position = new Vector3(0f, 0.05f, 1.4f);
-        parcelPositionLow.position = new Vector3(0f, -27f, 1.69f);
+        parcelPositionHigh = new Vector3(0f, 0.05f, 1.4f);
+        parcelPositionLow = new Vector3(0f, -0.47f, 1.69f);
 
     }
 
@@ -27,6 +27,24 @@ public class ParcelPositions : MonoBehaviour
         currentParcelTransform = transform;
 
         if (playerMovement != null) isCrouching = playerMovement.isCrouching;
-       
+
+        ParcelCrouch();
+    }
+
+    private void ParcelCrouch()
+    {
+        Vector3 targetPosition = isCrouching ? parcelPositionLow : parcelPositionHigh;
+
+
+        if (isCrouching)
+        {
+         
+            currentParcelTransform.localPosition = Vector3.Lerp(currentParcelTransform.localPosition, targetPosition, playerMovement.crouchSpeed * Time.deltaTime);
+        }
+        else
+        {
+          
+            currentParcelTransform.localPosition = Vector3.Lerp(currentParcelTransform.localPosition, targetPosition, playerMovement.crouchSpeed * Time.deltaTime);
+        }
     }
 }

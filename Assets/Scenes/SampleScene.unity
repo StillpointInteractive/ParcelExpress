@@ -1793,8 +1793,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faa9feb3285b75845aa04967e61a21b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parcelPositionHigh: {fileID: 0}
-  parcelPositionLow: {fileID: 0}
+  parcelPositionHigh: {x: 0, y: 0, z: 0}
+  parcelPositionLow: {x: 0, y: 0, z: 0}
   currentParcelTransform: {fileID: 0}
   isCrouching: 0
 --- !u!1 &1355066607
@@ -1978,6 +1978,8 @@ MonoBehaviour:
   slideFriction: 10
   slideMinimumSpeed: 4
   maxSlideTime: 1.2
+  minSprintSpeed: 10
+  slideCooldown: 3
   slideSpeed: 0
 --- !u!143 &1469231518
 CharacterController:
@@ -2072,8 +2074,6 @@ MonoBehaviour:
   smallParcelHoldPoint: {fileID: 696209330}
   mediumParcelHoldPoint: {fileID: 582585610}
   largeParcelHoldPoint: {fileID: 549530990}
-  parcelTransformHigh: {fileID: 0}
-  parcelTransformLow: {fileID: 0}
   interactRange: 5
   heldParcel: {fileID: 0}
   cameraPos: {fileID: 330585546}

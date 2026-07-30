@@ -1,6 +1,6 @@
 using UnityEngine;
 
-
+// TO DO      Make slide only happennwhen you are sprinting and your current speed is greater than the minSlideSpeed
 public class PlayerMovement : MonoBehaviour
 {
 
@@ -30,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float accelOrDeceleration;
     [SerializeField] private float standingHeight = 2f;
     [SerializeField] private float crouchingHeight = 1.2f;
-    [SerializeField] private float crouchSpeed = 8f;
+ public float crouchSpeed = 8f;
     [SerializeField] private float standCheckRadius = 0.3f;
     [SerializeField] private LayerMask standCheckLayers;
 
@@ -54,12 +54,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float slideFriction = 8f;
     [SerializeField] private float slideMinimumSpeed = 1f;
     [SerializeField] private float maxSlideTime = 1.2f;
-    
+    [SerializeField] private float minSprintSpeed = 10f;
+    [SerializeField] private float slideCooldown = 3f;
 
     private Vector3 slideDirection;
     private Vector2 slideInput = new Vector2(0, 1);
     [SerializeField] private float slideSpeed;
-    private float slideTimer;
+    private float nextSlideTime = 0f;
+
+ 
 
     private void Awake()
     {
@@ -96,6 +99,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+
+
         GetInput();
 
         HandleGravity();
@@ -111,6 +116,7 @@ public class PlayerMovement : MonoBehaviour
 
         HandleCamera();
 
+      
        
     }
 
@@ -198,7 +204,7 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 moveDirection = transform.right * moveInput.x + transform.forward * moveInput.y;
 
-        Debug.Log(moveInput);
+    
         Vector3 horizontalVelocity;
 
         if (isSliding)
@@ -289,8 +295,18 @@ public class PlayerMovement : MonoBehaviour
     private void StartSlide()
     {
 
-        if (moveInput != slideInput) return;
-        isSliding = true;
+        if (moveInput != slideInput || moveInput == Vector2.zero) return;
+
+        if (Time.time <= nextSlideTime)
+        {
+            return;
+        }
+        else
+        {
+            nextSlideTime = Time.time + slideCooldown;
+        }
+
+            isSliding = true;
         isCrouching = true;
 
         slideDirection = transform.forward;
@@ -317,6 +333,8 @@ public class PlayerMovement : MonoBehaviour
 
         Debug.Log("Slide Ended");
     }
+
+  
 }
 
 
