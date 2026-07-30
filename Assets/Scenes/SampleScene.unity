@@ -1041,12 +1041,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 549530989}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.775, z: 1.495}
+  m_LocalRotation: {x: -0, y: 0.70710707, z: -0, w: 0.7071066}
+  m_LocalPosition: {x: 0.27662888, y: -0.81683266, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1469231516}
+  m_Father: {fileID: 1316323353}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &582585609
 GameObject:
@@ -1072,12 +1072,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 582585609}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.288, z: 1.204}
+  m_LocalRotation: {x: -0, y: 0.70710707, z: -0, w: 0.7071066}
+  m_LocalPosition: {x: -0.014371278, y: -0.32983267, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1469231516}
+  m_Father: {fileID: 1316323353}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &603103979
 GameObject:
@@ -1211,12 +1211,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 696209329}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.616, y: 0.205, z: 1.142}
+  m_LocalRotation: {x: -0, y: 0.70710707, z: -0, w: 0.7071066}
+  m_LocalPosition: {x: 0, y: 0.1631673, z: -0.73}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1469231516}
+  m_Father: {fileID: 1316323353}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &735435004
 GameObject:
@@ -1746,6 +1746,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1227851240}
   m_CullTransparentMesh: 1
+--- !u!1 &1316323352
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1316323353}
+  - component: {fileID: 1316323354}
+  m_Layer: 0
+  m_Name: ParcelPositions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1316323353
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1316323352}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.70710707, z: -0, w: 0.7071066}
+  m_LocalPosition: {x: 0, y: 0.05, z: 1.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 696209330}
+  - {fileID: 582585610}
+  - {fileID: 549530990}
+  m_Father: {fileID: 1469231516}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1316323354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1316323352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faa9feb3285b75845aa04967e61a21b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parcelPositionHigh: {fileID: 0}
+  parcelPositionLow: {fileID: 0}
+  currentParcelTransform: {fileID: 0}
+  isCrouching: 0
 --- !u!1 &1355066607
 GameObject:
   m_ObjectHideFlags: 0
@@ -1879,9 +1930,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 330585546}
-  - {fileID: 696209330}
-  - {fileID: 582585610}
-  - {fileID: 549530990}
+  - {fileID: 1316323353}
   m_Father: {fileID: 1193753222}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &1469231517
@@ -1924,6 +1973,8 @@ MonoBehaviour:
   cameraTransform: {fileID: 330585546}
   slideStartSpeed: 12
   slideSpeedBoost: 2
+  slideSensitivity: 0
+  slideSensMultiplpication: 0.2
   slideFriction: 10
   slideMinimumSpeed: 4
   maxSlideTime: 1.2
@@ -2021,6 +2072,8 @@ MonoBehaviour:
   smallParcelHoldPoint: {fileID: 696209330}
   mediumParcelHoldPoint: {fileID: 582585610}
   largeParcelHoldPoint: {fileID: 549530990}
+  parcelTransformHigh: {fileID: 0}
+  parcelTransformLow: {fileID: 0}
   interactRange: 5
   heldParcel: {fileID: 0}
   cameraPos: {fileID: 330585546}

@@ -111,7 +111,7 @@ public class PlayerMovement : MonoBehaviour
 
         HandleCamera();
 
-
+       
     }
 
     private void GetInput()

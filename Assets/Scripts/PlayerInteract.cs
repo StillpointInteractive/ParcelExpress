@@ -7,6 +7,7 @@ public class PlayerInteract : MonoBehaviour
     [SerializeField] private Transform mediumParcelHoldPoint;
     [SerializeField] private Transform largeParcelHoldPoint;
 
+
     [SerializeField] private float interactRange = 5f;
 
    
@@ -16,6 +17,11 @@ public class PlayerInteract : MonoBehaviour
 
     public Transform cameraPos;
 
+
+    private void Start()
+    {
+       
+    }
     private void Update()
     {
         if (Keyboard.current.eKey.wasPressedThisFrame) TryPickUp();
