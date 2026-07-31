@@ -1,15 +1,20 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-// TO DO      Make slide only happennwhen you are sprinting and your current speed is greater than the minSlideSpeed
+
 public class PlayerMovement : MonoBehaviour
 {
 
     private CharacterController controller;
     private PlayerControls playerControls;
+    private Rigidbody rb;
 
 
     private Vector2 moveInput;
     private Vector2 lookInput;
+
+    Vector3 moveDirection;
 
     private float xRotation = 0f;
     private float verticalVelocity;
@@ -18,19 +23,35 @@ public class PlayerMovement : MonoBehaviour
     public bool isWalking = false;
     public bool isCrouching = false;
     public bool isSliding = false;
+    public bool isAirborne = false;
 
+    [Header("Idle")]
     [SerializeField] private float idleSpeed = 0f;
+
+    [Header("Movement")]
     [SerializeField] private float crouchMovementSpeed = 2.5f;
     [SerializeField] private float walkSpeed = 5f;
     [SerializeField] private float sprintSpeed = 10f;
-    [SerializeField] private float currentSpeed;
-    [SerializeField] private float targetSpeed;
     [SerializeField] private float sprintAcceleration = 12f;
     [SerializeField] private float sprintDeceleration = 20f;
     [SerializeField] private float accelOrDeceleration;
+    [SerializeField] private float airAcceleration = 5f;
+    public float crouchSpeed = 8f;
+    [SerializeField] private float jumpForce = 4f;
+    [SerializeField] private float jumpSpeed;
+    [SerializeField] private float currentSpeed;
+    [SerializeField] private float targetSpeed;
+   
+
+    [Header("Sensitivity")]
+    [SerializeField] private float jumpSensitivity;
+    [SerializeField] private float jumpSensMultiplpication = 0.4f;
+    [SerializeField] private float mouseSensitivity = 0.1f;
+
+    [Header("PlayerDimensions")]
     [SerializeField] private float standingHeight = 2f;
     [SerializeField] private float crouchingHeight = 1.2f;
- public float crouchSpeed = 8f;
+  
     [SerializeField] private float standCheckRadius = 0.3f;
     [SerializeField] private LayerMask standCheckLayers;
 
@@ -38,11 +59,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float crouchingCameraHeight = 0.15f;
     float targetCameraHeight;
 
-   [SerializeField] private Vector3 standingCenter = Vector3.zero;
+    [SerializeField] private Vector3 standingCenter = Vector3.zero;
 
 
-    [SerializeField] private float mouseSensitivity = 0.1f;
-    [SerializeField] private float jumpForce = 4f;
+   
+   
+    [SerializeField] private Vector3 airVelocity;
 
     [SerializeField] private Transform cameraTransform;
 
@@ -62,12 +84,21 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float slideSpeed;
     private float nextSlideTime = 0f;
 
- 
+    [Header("GroundCheck")]
+    [SerializeField] private float rayCastRange = 2f;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private bool isGrounded;
 
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
+
         playerControls = new PlayerControls();
+
+        rb = GetComponent<Rigidbody>();
+
+
+        cameraTransform = Camera.main.transform;
     }
 
     private void OnEnable()
@@ -89,6 +120,8 @@ public class PlayerMovement : MonoBehaviour
         standingCameraHeight = cameraPos.y;
 
         cameraTransform.localPosition = cameraPos;
+
+        jumpSpeed = sprintSpeed;
     }
 
     private void OnDisable()
@@ -116,8 +149,9 @@ public class PlayerMovement : MonoBehaviour
 
         HandleCamera();
 
-      
+        CheckIfGrounded();
        
+      
     }
 
     private void GetInput()
@@ -136,12 +170,18 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleJump()
     {
-        if (!controller.isGrounded)
+        if (!isGrounded)
             return;
+
+
+        jumpSensitivity = mouseSensitivity * jumpSensMultiplpication;
 
         if (playerControls.Player.Jump.WasPressedThisFrame())
         {
+            airVelocity = moveDirection.normalized * currentSpeed;
             verticalVelocity = jumpForce;
+           
+            
         }
     }
 
@@ -151,20 +191,25 @@ public class PlayerMovement : MonoBehaviour
         bool sprintHeld = playerControls.Player.Sprint.IsPressed();
         bool crouchHeld = playerControls.Player.Crouch.IsPressed();
 
-        isSprinting = controller.isGrounded && hasMovementInput && sprintHeld;
+        isSprinting = isGrounded && hasMovementInput && sprintHeld;
 
 
-        if(controller.isGrounded && hasMovementInput && sprintHeld && crouchHeld && !isSliding) StartSlide();
+        if(isGrounded && hasMovementInput && sprintHeld && crouchHeld && !isSliding) StartSlide();
 
 
 
-        isWalking = controller.isGrounded && hasMovementInput && !isSprinting && !isCrouching;
+        isWalking = isGrounded && hasMovementInput && !isSprinting && !isCrouching;
+
+        isAirborne = !isGrounded;
 
       
     }
 
     private void HandleMovement()
     {
+        Vector3 horizontalVelocity;
+
+       
         if (isSliding)
         {
             slideSpeed -= slideFriction * Time.deltaTime;
@@ -180,58 +225,69 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        else if (isSprinting)
-            targetSpeed = sprintSpeed;
+        else if (isSprinting) targetSpeed = sprintSpeed;
 
-        else if (isCrouching)
-            targetSpeed = crouchMovementSpeed;
 
-        else if (isWalking)
-            targetSpeed = walkSpeed;
+        else if (isCrouching) targetSpeed = crouchMovementSpeed;
 
-        else
-            targetSpeed = idleSpeed;
 
-        if (currentSpeed < targetSpeed)
-            accelOrDeceleration = sprintAcceleration;
-        else if (currentSpeed > targetSpeed)
-            accelOrDeceleration = sprintDeceleration;
+        else if (isWalking) targetSpeed = walkSpeed;
+
+        else if (isAirborne) targetSpeed = currentSpeed;
+      
+        else targetSpeed = walkSpeed;
+       
+           
+
+        if (currentSpeed < targetSpeed) accelOrDeceleration = sprintAcceleration;
+
+        else if (currentSpeed > targetSpeed) accelOrDeceleration = sprintDeceleration;
+
 
         currentSpeed = Mathf.MoveTowards(
             currentSpeed,
             targetSpeed,
             accelOrDeceleration * Time.deltaTime);
 
-        Vector3 moveDirection = transform.right * moveInput.x + transform.forward * moveInput.y;
+        moveDirection = transform.right * moveInput.x + transform.forward * moveInput.y;
 
-    
-        Vector3 horizontalVelocity;
+
+
 
         if (isSliding)
         {
             horizontalVelocity = slideDirection + moveDirection * slideSpeed;
         }
-        else
+        else if (isGrounded)
         {
             horizontalVelocity = moveDirection * currentSpeed;
         }
+        else
+        {
 
-        Vector3 verticalVelocityVector = Vector3.up * verticalVelocity;
+            horizontalVelocity = moveDirection * currentSpeed;
+        }
 
-        Vector3 finalVelocity = horizontalVelocity + verticalVelocityVector;
+        Vector3 finalVelocity = horizontalVelocity + Vector3.up * verticalVelocity;
 
         controller.Move(finalVelocity * Time.deltaTime);
     }
 
     private void HandleLook()
     {
-        if (!isSliding)
+        if (isAirborne)
+        {
+            transform.Rotate(Vector3.up * lookInput.x * jumpSensitivity);
+            xRotation -= lookInput.y * jumpSensitivity;
+        }
+        else if (!isSliding)
         {
             transform.Rotate(Vector3.up * lookInput.x * mouseSensitivity);
             xRotation -= lookInput.y * mouseSensitivity;
         }
+       
         else
-        { 
+        {
             transform.Rotate(Vector3.up * lookInput.x * slideSensitivity);
             xRotation -= lookInput.y * slideSensitivity;
         }
@@ -243,6 +299,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleCrouch()
     {
+
+        if (isAirborne) return;
+
         if(isSliding)
         {
             isCrouching = true;
@@ -306,7 +365,7 @@ public class PlayerMovement : MonoBehaviour
             nextSlideTime = Time.time + slideCooldown;
         }
 
-            isSliding = true;
+        isSliding = true;
         isCrouching = true;
 
         slideDirection = transform.forward;
@@ -334,7 +393,24 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("Slide Ended");
     }
 
-  
+  private bool CheckIfGrounded()
+    {
+
+        Ray ray = new Ray(transform.position, transform.up * -1);
+        RaycastHit hit;
+
+       
+
+        if(Physics.Raycast(ray, out hit, rayCastRange, groundLayer))
+        {
+            isGrounded = true;
+        }
+        else
+        {
+            isGrounded= false;
+        }
+            return isGrounded;
+    }
 }
 
 
