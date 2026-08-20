@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     private PlayerControls playerControls;
     private Rigidbody rb;
     private HeadBob headBob;
+    private Camera camera;
 
 
     private Vector2 moveInput;
@@ -81,11 +82,20 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float maxSlideTime = 1.2f;
     [SerializeField] private float minSprintSpeed = 10f;
     [SerializeField] private float slideCooldown = 3f;
+    [SerializeField] private float headBobMultiplier = 10f;
+    [SerializeField] private float slideSpeed;
+    [SerializeField] private float slidingHeadBobSpeed;
+
+    [Header("Camera")]
+    [SerializeField] private float normalFOV = 80f;
+    [SerializeField] private float sprintFov = 90f;
+    [SerializeField] private float fovChangeSpeed = 8f;
     public float prevHeadBobSpeed;
+    
 
     private Vector3 slideDirection;
     private Vector2 slideInput = new Vector2(0, 1);
-    [SerializeField] private float slideSpeed;
+   
     private float nextSlideTime = 0f;
 
     [Header("GroundCheck")]
@@ -103,6 +113,7 @@ public class PlayerMovement : MonoBehaviour
 
         headBob = GetComponentInChildren<HeadBob>();
 
+        camera = Camera.main;
 
         cameraTransform = Camera.main.transform;
     }
@@ -354,7 +365,8 @@ public class PlayerMovement : MonoBehaviour
         
     }
 
-  public float slidingHeadBobSpeed;
+ 
+    private bool hasMultipliedValue = false;
     private void HandleCamera()
     {
 
@@ -366,26 +378,36 @@ public class PlayerMovement : MonoBehaviour
 
         cameraTransform.localPosition = cameraPosition;
 
-        float headBobSpeed = headBob.sprintBobSpeed;
+        // Change headbobbing to the slising headBob speed
 
-        if (headBobSpeed! > 100)
+        if (headBob != null)
         {
-            slidingHeadBobSpeed = headBobSpeed * 8;
-
+            float headBobSpeed = headBob.sprintBobSpeed;
+            slidingHeadBobSpeed = headBobSpeed;
         }
-
+      
         if (isSliding)
         {
-           
-            
+
+            if(!hasMultipliedValue) slidingHeadBobSpeed *= headBobMultiplier;
+
+            hasMultipliedValue = true;
             headBob.sprintBobSpeed = slidingHeadBobSpeed;
-
-
+            headBob.sprintBobSpeed =
+                Mathf.Clamp(headBob.sprintBobSpeed, prevHeadBobSpeed, slidingHeadBobSpeed);
         }
         else
         {
             headBob.sprintBobSpeed = prevHeadBobSpeed;
+            hasMultipliedValue = false;
         }
+
+        // Change fov when sprinting
+
+        float targetFov = isSprinting ? sprintFov : normalFOV;
+
+        camera.fieldOfView =
+             Mathf.Lerp(camera.fieldOfView, targetFov, fovChangeSpeed * Time.deltaTime);
     }
 
 
