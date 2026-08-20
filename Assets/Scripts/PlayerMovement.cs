@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     private CharacterController controller;
     private PlayerControls playerControls;
     private Rigidbody rb;
+    private HeadBob headBob;
 
 
     private Vector2 moveInput;
@@ -19,6 +20,8 @@ public class PlayerMovement : MonoBehaviour
     private float xRotation = 0f;
     private float verticalVelocity;
 
+    public float groundedGravityIntensity = 10f;
+    public float airborneGravityIntensity = 5f;
     public bool isSprinting = false;
     public bool isWalking = false;
     public bool isCrouching = false;
@@ -78,6 +81,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float maxSlideTime = 1.2f;
     [SerializeField] private float minSprintSpeed = 10f;
     [SerializeField] private float slideCooldown = 3f;
+    public float prevHeadBobSpeed;
 
     private Vector3 slideDirection;
     private Vector2 slideInput = new Vector2(0, 1);
@@ -96,6 +100,8 @@ public class PlayerMovement : MonoBehaviour
         playerControls = new PlayerControls();
 
         rb = GetComponent<Rigidbody>();
+
+        headBob = GetComponentInChildren<HeadBob>();
 
 
         cameraTransform = Camera.main.transform;
@@ -122,6 +128,8 @@ public class PlayerMovement : MonoBehaviour
         cameraTransform.localPosition = cameraPos;
 
         jumpSpeed = sprintSpeed;
+
+        prevHeadBobSpeed = headBob.sprintBobSpeed;
     }
 
     private void OnDisable()
@@ -162,7 +170,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleGravity()
     {
-        verticalVelocity += Physics.gravity.y * Time.deltaTime;
+       if(controller.isGrounded) verticalVelocity += Physics.gravity.y * Time.deltaTime * groundedGravityIntensity;
+       else verticalVelocity += Physics.gravity.y * Time.deltaTime * airborneGravityIntensity;
+
 
         if (controller.isGrounded && verticalVelocity < 0)
             verticalVelocity = -2;
@@ -172,17 +182,24 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!isGrounded)
             return;
+       
 
+     
 
         jumpSensitivity = mouseSensitivity * jumpSensMultiplpication;
 
         if (playerControls.Player.Jump.WasPressedThisFrame())
         {
             airVelocity = moveDirection.normalized * currentSpeed;
+
+         
+
             verticalVelocity = jumpForce;
-           
-            
+
+
         }
+
+       
     }
 
     private void HandleMovementStates()
@@ -337,6 +354,7 @@ public class PlayerMovement : MonoBehaviour
         
     }
 
+  public float slidingHeadBobSpeed;
     private void HandleCamera()
     {
 
@@ -347,6 +365,27 @@ public class PlayerMovement : MonoBehaviour
         cameraPosition.y = Mathf.Lerp(cameraPosition.y, targetCameraHeight, crouchSpeed * Time.deltaTime);
 
         cameraTransform.localPosition = cameraPosition;
+
+        float headBobSpeed = headBob.sprintBobSpeed;
+
+        if (headBobSpeed! > 100)
+        {
+            slidingHeadBobSpeed = headBobSpeed * 8;
+
+        }
+
+        if (isSliding)
+        {
+           
+            
+            headBob.sprintBobSpeed = slidingHeadBobSpeed;
+
+
+        }
+        else
+        {
+            headBob.sprintBobSpeed = prevHeadBobSpeed;
+        }
     }
 
 
@@ -381,7 +420,7 @@ public class PlayerMovement : MonoBehaviour
 
         cameraTransform.localPosition = cameraPosition;
 
-        Debug.Log("Slide started");
+        
     }
 
     private void StopSliding()
@@ -390,7 +429,7 @@ public class PlayerMovement : MonoBehaviour
 
         slideSpeed  = 0;
 
-        Debug.Log("Slide Ended");
+      
     }
 
   private bool CheckIfGrounded()

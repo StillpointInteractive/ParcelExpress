@@ -1,12 +1,13 @@
 using UnityEngine;
 
+
 public class HeadBob : MonoBehaviour
 {
     private Vector3 startPosition;
     private float wavePosition;
     [SerializeField] private float idleBobSpeed = 2f;
     [SerializeField] private float walkBobSpeed = 3f;
-    [SerializeField] private float sprintBobSpeed = 4f;
+    public float sprintBobSpeed = 4f;
     [SerializeField] private float currentBobSpeed = 0f;
 
     [SerializeField] private float idleBobHeight = 0.05f;
@@ -21,7 +22,9 @@ public class HeadBob : MonoBehaviour
 
     private PlayerMovement PlayerMovement;
 
-   
+    public Vector3 CurrentBobOffset { get; private set; }
+
+
 
     private void Awake()
     {
@@ -36,7 +39,7 @@ public class HeadBob : MonoBehaviour
     private void Update()
     {
 
-        if(PlayerMovement != null)
+        if (PlayerMovement != null)
         {
             if (PlayerMovement.isWalking)
             {
@@ -57,15 +60,18 @@ public class HeadBob : MonoBehaviour
                 currentBobWidth = idleBobWidth;
             }
         }
-        
-         wavePosition += Time.deltaTime * currentBobSpeed;
+
+        wavePosition += Time.deltaTime * currentBobSpeed;
 
 
         float verticalBob = Mathf.Sin(wavePosition) * currentBobHeight;
         float horizontalBob = Mathf.Sin(wavePosition * 0.5f) * currentBobWidth;
 
-     Vector3 targetPosition = new Vector3(startPosition.x = horizontalBob, startPosition.y + verticalBob,startPosition.y);
+        CurrentBobOffset = new Vector3(horizontalBob, verticalBob, 0f);
+
+        Vector3 targetPosition = new Vector3(startPosition.x = horizontalBob, startPosition.y + verticalBob, startPosition.y);
 
         transform.localPosition = Vector3.Lerp(transform.localPosition, targetPosition, Time.deltaTime * 10f);
     }
 }
+
