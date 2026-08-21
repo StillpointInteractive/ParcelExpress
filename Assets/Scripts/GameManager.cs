@@ -53,8 +53,13 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        timer = Mathf.Clamp(timer, 0f, maxTime);
 
-        timertxt.text = "Time:  " + Mathf.RoundToInt(Mathf.Clamp(timer, 0f, maxTime));
+        int minutes = Mathf.FloorToInt(timer / 60f);
+        int seconds = Mathf.FloorToInt(timer % 60f);
+        int hundredths = Mathf.FloorToInt((timer * 100f) % 100f);
+
+        timertxt.text = $"{minutes}:{seconds:00}.{hundredths:00}";
         scoretxt.text = "Score: " + score;
 
         if (timerRunning) timer -= Time.deltaTime;
