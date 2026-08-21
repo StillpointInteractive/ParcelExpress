@@ -16,9 +16,24 @@ public class GameManager : MonoBehaviour
     public TMP_Text timertxt;
     public TMP_Text scoretxt;
 
+    private GameObject canvas;
+    private GameObject interactionPrompt;
+
+    private GameObject player;
+    private PlayerInteract pInteract;
+
     private void Awake()
     {
         Instance = this;
+
+        canvas = GameObject.Find("Canvas");
+       
+       
+        player = GameObject.FindWithTag("Player");
+
+        interactionPrompt = GameObject.FindGameObjectWithTag("InteractionPrompt");
+
+        pInteract = player.GetComponentInChildren<PlayerInteract>();
     }
 
     private void Start()
@@ -51,6 +66,16 @@ public class GameManager : MonoBehaviour
         // GameOver
     }
 
+    private void InteractionPromptState()
+    {
+        if( interactionPrompt != null )
+        {
+           if(pInteract.currentlyLookingAtParcel) interactionPrompt.gameObject.SetActive(true);
+           else interactionPrompt.gameObject.SetActive(false);
+        }
+
+    }
+
     private void Update()
     {
         timer = Mathf.Clamp(timer, 0f, maxTime);
@@ -64,7 +89,7 @@ public class GameManager : MonoBehaviour
 
         if (timerRunning) timer -= Time.deltaTime;
 
-        
+        InteractionPromptState();
     }
 
 

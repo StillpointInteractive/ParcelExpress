@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerInteract : MonoBehaviour
 {
+    [Header("ParcelHoldPositions")]
     [SerializeField] private Transform smallParcelHoldPoint;
     [SerializeField] private Transform mediumParcelHoldPoint;
     [SerializeField] private Transform largeParcelHoldPoint;
@@ -12,10 +13,9 @@ public class PlayerInteract : MonoBehaviour
 
    
     public Parcel heldParcel;
-   
-
-
     public Transform cameraPos;
+
+    public bool currentlyLookingAtParcel;
 
 
     private void Start()
@@ -24,11 +24,39 @@ public class PlayerInteract : MonoBehaviour
     }
     private void Update()
     {
+        IsLookingAtParcel();
+
         if (Keyboard.current.eKey.wasPressedThisFrame) TryPickUp();
   
         if (Keyboard.current.qKey.wasPressedThisFrame && heldParcel != null) Drop(heldParcel);
     }
 
+    private void IsLookingAtParcel()
+    {
+
+        Ray ray = new Ray(cameraPos.transform.position, cameraPos.transform.forward);
+
+        RaycastHit hit;
+
+        if(Physics.Raycast(ray, out hit, interactRange))
+        {
+            if(hit.collider != null)
+            {
+                if(hit.collider.gameObject.GetComponent<Parcel>())
+                {
+                   currentlyLookingAtParcel = true;
+                }
+                else
+                {
+                    currentlyLookingAtParcel = false;
+                }
+            }
+        }
+
+
+
+
+    }
     private void TryPickUp()
     {
         if (heldParcel != null) return;

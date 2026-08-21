@@ -10,6 +10,8 @@ TagManager:
   - LargeParcel
   - OversizedParcel
   - DeliveryZone
+  - InteractionPrompt
+  - Canvas
   layers:
   - Default
   - TransparentFX
