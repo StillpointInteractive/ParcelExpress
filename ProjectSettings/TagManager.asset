@@ -12,6 +12,7 @@ TagManager:
   - DeliveryZone
   - InteractionPrompt
   - Canvas
+  - RespawnPoint
   layers:
   - Default
   - TransparentFX

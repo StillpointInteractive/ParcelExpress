@@ -19,7 +19,7 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection;
 
     private float xRotation = 0f;
-    private float verticalVelocity;
+    public float verticalVelocity;
 
     public float groundedGravityIntensity = 10f;
     public float airborneGravityIntensity = 5f;
@@ -91,6 +91,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float sprintFov = 90f;
     [SerializeField] private float fovChangeSpeed = 8f;
     public float prevHeadBobSpeed;
+
+    [SerializeField] private float landingDipAmount =0.12f;
+    [SerializeField] private float landingDipSpeed = 12f;
+    [SerializeField] private float landingDipRecoverySpeed = 8f;
+
+    private float landingDipOffset = 0f;
+    public bool wasGrounded = false;
     
 
     private Vector3 slideDirection;
@@ -98,10 +105,12 @@ public class PlayerMovement : MonoBehaviour
    
     private float nextSlideTime = 0f;
 
+ 
+
     [Header("GroundCheck")]
     [SerializeField] private float rayCastRange = 2f;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private bool isGrounded;
+   public bool isGrounded;
 
     private void Awake()
     {
@@ -166,10 +175,12 @@ public class PlayerMovement : MonoBehaviour
 
         HandleLook();
 
+        CheckIfGrounded();
+
         HandleCamera();
 
-        CheckIfGrounded();
        
+       //Debug.Log(verticalVelocity);
       
     }
 
@@ -370,15 +381,19 @@ public class PlayerMovement : MonoBehaviour
     private void HandleCamera()
     {
 
-         targetCameraHeight = isCrouching ? crouchingCameraHeight : standingCameraHeight;
+        targetCameraHeight = isCrouching ? crouchingCameraHeight : standingCameraHeight;
+
+        landingDipOffset = Mathf.MoveTowards(landingDipOffset, 0f, landingDipRecoverySpeed * Time.deltaTime);
 
         Vector3 cameraPosition = cameraTransform.localPosition;
 
-        cameraPosition.y = Mathf.Lerp(cameraPosition.y, targetCameraHeight, crouchSpeed * Time.deltaTime);
+        float targetY = targetCameraHeight + landingDipOffset;
+
+        cameraPosition.y = Mathf.Lerp(cameraPosition.y, targetY, crouchSpeed * Time.deltaTime);
 
         cameraTransform.localPosition = cameraPosition;
 
-        // Change headbobbing to the slising headBob speed
+        // Change headbobbing to the sliding headBob speed
 
         if (headBob != null)
         {
@@ -460,16 +475,19 @@ public class PlayerMovement : MonoBehaviour
         Ray ray = new Ray(transform.position, transform.up * -1);
         RaycastHit hit;
 
-       
 
-        if(Physics.Raycast(ray, out hit, rayCastRange, groundLayer))
+         bool currentlyGrounded = Physics.Raycast(ray, out hit, rayCastRange, groundLayer);
+
+        //bool currentlyGrounded = controller.isGrounded;
+
+        if (currentlyGrounded && !wasGrounded)
         {
-            isGrounded = true;
+            
+            landingDipOffset = -landingDipAmount;
         }
-        else
-        {
-            isGrounded= false;
-        }
+
+        wasGrounded = currentlyGrounded;
+        isGrounded = currentlyGrounded;
             return isGrounded;
     }
 }
