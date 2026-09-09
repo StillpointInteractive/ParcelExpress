@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float timer;
     [SerializeField] private float maxTime = 180f;
     [SerializeField] private bool timerRunning;
+    public int playerLives = 3;
 
     public TMP_Text timertxt;
     public TMP_Text scoretxt;
@@ -36,10 +37,7 @@ public class GameManager : MonoBehaviour
         pInteract = player.GetComponentInChildren<PlayerInteract>();
     }
 
-    private void Start()
-    {
-        
-    }
+ 
 
     public void AddScore(int amount)
     {
@@ -76,10 +74,8 @@ public class GameManager : MonoBehaviour
 
     }
 
-    private void Update()
+    private void UpdateParcelTimer()
     {
-        timer = Mathf.Clamp(timer, 0f, maxTime);
-
         int minutes = Mathf.FloorToInt(timer / 60f);
         int seconds = Mathf.FloorToInt(timer % 60f);
         int hundredths = Mathf.FloorToInt((timer * 100f) % 100f);
@@ -87,8 +83,22 @@ public class GameManager : MonoBehaviour
         timertxt.text = $"{minutes}:{seconds:00}.{hundredths:00}";
         scoretxt.text = "Score: " + score;
 
-        if (timerRunning) timer -= Time.deltaTime;
+        if (timerRunning) timer -= Time.deltaTime;  
 
+    }
+
+    private void Update()
+    {
+        timer = Mathf.Clamp(timer, 0f, maxTime);
+
+        playerLives = Mathf.Clamp(playerLives, 0, 3);
+
+        if(playerLives == 0)
+        {
+           MissionFailed();
+        }
+
+        UpdateParcelTimer();
         InteractionPromptState();
     }
 

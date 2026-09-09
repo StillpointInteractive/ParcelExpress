@@ -11,24 +11,35 @@ public class PlayerInteract : MonoBehaviour
 
     [SerializeField] private float interactRange = 5f;
 
-   
+    private GameObject gManager;
+    private ParcelManager pManager;
+
     public Parcel heldParcel;
     public Transform cameraPos;
 
     public bool currentlyLookingAtParcel;
 
+    private void Awake()
+    {
 
+        gManager = GameObject.Find("GameManager");
+        pManager = gManager.GetComponent<ParcelManager>();
+    }
     private void Start()
     {
        
     }
     private void Update()
     {
+        currentlyLookingAtParcel = false;
         IsLookingAtParcel();
 
         if (Keyboard.current.eKey.wasPressedThisFrame) TryPickUp();
   
         if (Keyboard.current.qKey.wasPressedThisFrame && heldParcel != null) Drop(heldParcel);
+
+        
+
     }
 
     private void IsLookingAtParcel()
@@ -40,17 +51,15 @@ public class PlayerInteract : MonoBehaviour
 
         if(Physics.Raycast(ray, out hit, interactRange))
         {
-            if(hit.collider != null)
+
+
+
+
+            if (hit.collider.gameObject.GetComponent<Parcel>() && heldParcel == null)
             {
-                if(hit.collider.gameObject.GetComponent<Parcel>())
-                {
-                   currentlyLookingAtParcel = true;
-                }
-                else
-                {
-                    currentlyLookingAtParcel = false;
-                }
+                currentlyLookingAtParcel = true;
             }
+            
         }
 
 
@@ -78,8 +87,9 @@ public class PlayerInteract : MonoBehaviour
             {
                 Pickup(parcel);
                 parcel.isPickedUp = true;
-
-               if(!parcel.hasBeenPickedUp) GameManager.Instance.StartTimer(5);
+                pManager.isPickedUp_PM = true;
+                pManager.currentlyHeldParcel = parcel;
+               if(!parcel.hasBeenPickedUp) GameManager.Instance.StartTimer(30);
             }
         }
     }
@@ -119,7 +129,8 @@ public class PlayerInteract : MonoBehaviour
     private void Drop(Parcel parcel)
     {
         parcel.isPickedUp = false;
-
+        pManager.isPickedUp_PM = false;
+        pManager.currentlyHeldParcel = null;
         parcel.transform.SetParent(null);
 
         heldParcel = null;

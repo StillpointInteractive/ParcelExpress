@@ -3,12 +3,14 @@ using UnityEngine;
 
 public class Respawn : MonoBehaviour
 {
-    [SerializeField] private float maxFallVelocity = -30f;
+    [SerializeField] private float maxFallVelocity = -80f;
 
     public Transform respawnPoint;
 
     private GameObject player;
     private PlayerMovement playerMovement;
+
+  
 
     [SerializeField] private GameObject respawnPointObj;
 
@@ -16,6 +18,8 @@ public class Respawn : MonoBehaviour
     {
         player = GameObject.Find("Player");
         playerMovement = player.GetComponent<PlayerMovement>();
+
+     
     }
     void Start()
     {
@@ -26,12 +30,15 @@ public class Respawn : MonoBehaviour
     void Update()
     {
        
-
-        if (playerMovement.verticalVelocity <= maxFallVelocity && respawnPoint != null)
+        if(respawnPoint != null)
+        if (playerMovement.verticalVelocity <= maxFallVelocity && playerMovement.isGrounded)
         {
-            Debug.Log("RESPAWNING!");
+           
             RespawnPlayer();
+            GameManager.Instance.playerLives--;
         }
+
+       
       
     }
 
@@ -50,6 +57,6 @@ public class Respawn : MonoBehaviour
     private void RespawnPlayer()
     {
         player.transform.position = respawnPoint.transform.position;
-
+        playerMovement.Respawn();
     }
 }

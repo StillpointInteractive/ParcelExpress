@@ -40,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float sprintDeceleration = 20f;
     [SerializeField] private float accelOrDeceleration;
     [SerializeField] private float airAcceleration = 5f;
+    [SerializeField] private Vector3 playerVelocity;
     public float crouchSpeed = 8f;
     [SerializeField] private float jumpForce = 4f;
     [SerializeField] private float jumpSpeed;
@@ -73,14 +74,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform cameraTransform;
 
     [Header("Slide")]
-    [SerializeField] private float slideStartSpeed = 12f;
+   
     [SerializeField] private float slideSpeedBoost = 1.5f;
     [SerializeField] private float slideSensitivity;
     [SerializeField] private float slideSensMultiplpication = 0.2f;
     [SerializeField] private float slideFriction = 8f;
     [SerializeField] private float slideMinimumSpeed = 1f;
-    [SerializeField] private float maxSlideTime = 1.2f;
-    [SerializeField] private float minSprintSpeed = 10f;
+
+
     [SerializeField] private float slideCooldown = 3f;
     [SerializeField] private float headBobMultiplier = 10f;
     [SerializeField] private float slideSpeed;
@@ -92,7 +93,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float fovChangeSpeed = 8f;
     public float prevHeadBobSpeed;
 
-    [SerializeField] private float landingDipAmount =0.12f;
+    [SerializeField] private float landingDipAmount =0.02f;
+    [SerializeField] private float prevLandingDipAmount;
+    [SerializeField] private float landingDipMultiplier = 1;
     [SerializeField] private float landingDipSpeed = 12f;
     [SerializeField] private float landingDipRecoverySpeed = 8f;
 
@@ -150,6 +153,9 @@ public class PlayerMovement : MonoBehaviour
         jumpSpeed = sprintSpeed;
 
         prevHeadBobSpeed = headBob.sprintBobSpeed;
+
+        prevLandingDipAmount = landingDipAmount;
+
     }
 
     private void OnDisable()
@@ -248,6 +254,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 horizontalVelocity;
 
+        playerVelocity = controller.velocity;
        
         if (isSliding)
         {
@@ -393,6 +400,8 @@ public class PlayerMovement : MonoBehaviour
 
         cameraTransform.localPosition = cameraPosition;
 
+       
+
         // Change headbobbing to the sliding headBob speed
 
         if (headBob != null)
@@ -478,17 +487,25 @@ public class PlayerMovement : MonoBehaviour
 
          bool currentlyGrounded = Physics.Raycast(ray, out hit, rayCastRange, groundLayer);
 
-        //bool currentlyGrounded = controller.isGrounded;
+        landingDipAmount = prevLandingDipAmount;
 
         if (currentlyGrounded && !wasGrounded)
         {
-            
-            landingDipOffset = -landingDipAmount;
+
+            landingDipMultiplier = playerVelocity.y;
+            landingDipAmount *= landingDipMultiplier * -1;
+            landingDipOffset -= landingDipAmount;
         }
 
         wasGrounded = currentlyGrounded;
         isGrounded = currentlyGrounded;
             return isGrounded;
+    }
+
+   public void Respawn()
+    {
+        //nullfies the affect of the landing dip by adding the value to the landingDipOffset
+        landingDipOffset += landingDipAmount;
     }
 }
 

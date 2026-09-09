@@ -13,6 +13,8 @@ TagManager:
   - InteractionPrompt
   - Canvas
   - RespawnPoint
+  - DropPrompt
+  - ScriptReference
   layers:
   - Default
   - TransparentFX

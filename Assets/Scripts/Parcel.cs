@@ -12,13 +12,18 @@ public class Parcel : MonoBehaviour
 
     private Rigidbody rb;
 
+   
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
+       
     }
 
     private void Update()
     {
+       
+
         if (isPickedUp)
         {
             rb.isKinematic = true;
@@ -26,7 +31,7 @@ public class Parcel : MonoBehaviour
         }
         else rb.isKinematic = false;
 
-
+       
     }
 
     public void Deliver()
