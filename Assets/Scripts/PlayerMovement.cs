@@ -16,13 +16,14 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 moveInput;
     private Vector2 lookInput;
 
-    Vector3 moveDirection;
+    public Vector3 moveDirection;
 
     private float xRotation = 0f;
     public float verticalVelocity;
 
     public float groundedGravityIntensity = 10f;
     public float airborneGravityIntensity = 5f;
+    public bool allowGravity = true;
     public bool isSprinting = false;
     public bool isWalking = false;
     public bool isCrouching = false;
@@ -46,6 +47,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpSpeed;
     [SerializeField] private float currentSpeed;
     [SerializeField] private float targetSpeed;
+    public float wallRunSpeed;
+    public bool wallRunning;
    
 
     [Header("Sensitivity")]
@@ -156,6 +159,8 @@ public class PlayerMovement : MonoBehaviour
 
         prevLandingDipAmount = landingDipAmount;
 
+        allowGravity = true;
+
     }
 
     private void OnDisable()
@@ -166,7 +171,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-
+        wallRunSpeed = currentSpeed;
 
         GetInput();
 
@@ -186,7 +191,7 @@ public class PlayerMovement : MonoBehaviour
         HandleCamera();
 
        
-       //Debug.Log(verticalVelocity);
+     
       
     }
 
@@ -198,12 +203,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleGravity()
     {
-       if(controller.isGrounded) verticalVelocity += Physics.gravity.y * Time.deltaTime * groundedGravityIntensity;
-       else verticalVelocity += Physics.gravity.y * Time.deltaTime * airborneGravityIntensity;
+       if(allowGravity)
+        {
+            if (controller.isGrounded) verticalVelocity += Physics.gravity.y * Time.deltaTime * groundedGravityIntensity;
+            else verticalVelocity += Physics.gravity.y * Time.deltaTime * airborneGravityIntensity;
 
 
-        if (controller.isGrounded && verticalVelocity < 0)
-            verticalVelocity = -2;
+            if (controller.isGrounded && verticalVelocity < 0)
+                verticalVelocity = -2;
+        }
     }
 
     private void HandleJump()
@@ -316,7 +324,10 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 finalVelocity = horizontalVelocity + Vector3.up * verticalVelocity;
 
-        controller.Move(finalVelocity * Time.deltaTime);
+        Vector3 nonElevatedVelocity =  new Vector3(finalVelocity.x, finalVelocity.y * 0, finalVelocity.z);
+
+       if(!wallRunning) controller.Move(finalVelocity * Time.deltaTime);
+       else controller.Move( nonElevatedVelocity* Time.deltaTime);
     }
 
     private void HandleLook()

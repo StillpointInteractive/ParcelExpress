@@ -32,11 +32,7 @@ public class DeliveryZone : MonoBehaviour
     private void Update()
     {
 
-        Debug.Log(
-            $"Zone: {playerHasEnteredZone} | " +
-            $"PickedUp: {pManager.isPickedUp_PM} | " +
-            $"Prompt: {dropPrompt.name}"
-        );
+       
 
         if (playerHasEnteredZone && pManager.isPickedUp_PM)
         {
