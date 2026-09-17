@@ -9,13 +9,17 @@ public class WallRunning : MonoBehaviour
     public float wallRunForce;
     public float maxWallRunTime;
     private float wallRunTimer;
+    public float wallJumpForce = 4f;
+
+    public float leftRotation = -15f;
+    public float rightRotation = 15f;
 
     [Header("Input")]
     private float horizontalInput;
     private float verticalInput;
 
     [Header("Detection")]
-    public float wallCheckDistance = 5f;
+    public float wallCheckDistance = 7f;
     public float minJumpHeight;
 
     private RaycastHit leftWallHit;
@@ -39,6 +43,9 @@ public class WallRunning : MonoBehaviour
     {
         CheckForWall();
         StateMachine();
+
+        leftRotation = Mathf.Clamp(leftRotation, -15f, 0);
+        rightRotation = Mathf.Clamp(rightRotation, 0, 15f);
     }
 
     private void FixedUpdate()
@@ -87,6 +94,7 @@ public class WallRunning : MonoBehaviour
 
         pm.moveDirection = wallForward;
 
+
         if ((orientation.forward - wallForward).magnitude > (orientation.forward - -wallForward).magnitude)
             wallForward = -wallForward;
     }
@@ -95,6 +103,13 @@ public class WallRunning : MonoBehaviour
     {
         pm.wallRunning = false;
         pm.allowGravity = true;
+    }
+
+    private void WallJump()
+    {
+        Vector3 wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
+
+        Vector3 forceToApply = transform.up * wallJumpForce + wallNormal * wallJumpForce;
     }
 
 }

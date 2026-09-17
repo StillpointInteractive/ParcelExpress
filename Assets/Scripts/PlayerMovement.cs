@@ -43,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float airAcceleration = 5f;
     [SerializeField] private Vector3 playerVelocity;
     public float crouchSpeed = 8f;
-    [SerializeField] private float jumpForce = 4f;
+    [SerializeField] private float jumpForce = 15f;
     [SerializeField] private float jumpSpeed;
     [SerializeField] private float currentSpeed;
     [SerializeField] private float targetSpeed;
@@ -216,7 +216,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleJump()
     {
-        if (!isGrounded)
+        if (!isGrounded && !wallRunning)
             return;
        
 
@@ -226,12 +226,14 @@ public class PlayerMovement : MonoBehaviour
 
         if (playerControls.Player.Jump.WasPressedThisFrame())
         {
+            allowGravity = true;
+            jumpForce = 15f;
             airVelocity = moveDirection.normalized * currentSpeed;
 
          
 
             verticalVelocity = jumpForce;
-
+            jumpForce = 0f;
 
         }
 
@@ -324,7 +326,7 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 finalVelocity = horizontalVelocity + Vector3.up * verticalVelocity;
 
-        Vector3 nonElevatedVelocity =  new Vector3(finalVelocity.x, finalVelocity.y * 0, finalVelocity.z);
+        Vector3 nonElevatedVelocity =  new Vector3(finalVelocity.x, finalVelocity.y * jumpForce, finalVelocity.z);
 
        if(!wallRunning) controller.Move(finalVelocity * Time.deltaTime);
        else controller.Move( nonElevatedVelocity* Time.deltaTime);
