@@ -6987,7 +6987,7 @@ Transform:
   m_GameObject: {fileID: 1193753221}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.00000077486027, z: -0, w: 1}
-  m_LocalPosition: {x: -0.91, y: 2.89, z: 0}
+  m_LocalPosition: {x: 99.6, y: 130.64, z: -109.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8509,7 +8509,7 @@ Transform:
   m_GameObject: {fileID: 1469231515}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.70710707, z: -0, w: 0.7071066}
-  m_LocalPosition: {x: 101, y: 127.64, z: -109.9}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8539,6 +8539,7 @@ MonoBehaviour:
   isCrouching: 0
   isSliding: 0
   isAirborne: 0
+  shouldJump: 1
   idleSpeed: 0
   crouchMovementSpeed: 2.5
   walkSpeed: 5
@@ -8553,7 +8554,7 @@ MonoBehaviour:
   jumpSpeed: 0
   currentSpeed: 0
   targetSpeed: 0
-  wallRunSpeed: 8.5
+  wallRunSpeed: 20
   wallRunning: 0
   jumpSensitivity: 0
   jumpSensMultiplpication: 0.4
@@ -8723,8 +8724,10 @@ MonoBehaviour:
   whatIsWall:
     serializedVersion: 2
     m_Bits: 128
+  allowedToWallRun: 1
   wallRunForce: 200
   maxWallRunTime: 1.5
+  wallRunTimer: 2
   wallJumpForce: 4
   leftRotation: -15
   rightRotation: 15

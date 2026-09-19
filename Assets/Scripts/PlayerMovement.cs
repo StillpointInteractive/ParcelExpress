@@ -1,7 +1,7 @@
-using System.Runtime.CompilerServices;
+using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
+// CURRENT PROBLEMS: Player can double jump if they are on a runnable wall. player cannot wall jump between walls for more than 2 seconds. the value needs t be reset after every wall
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -29,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
     public bool isCrouching = false;
     public bool isSliding = false;
     public bool isAirborne = false;
+    public bool shouldJump = false;
 
     [Header("Idle")]
     [SerializeField] private float idleSpeed = 0f;
@@ -190,8 +191,8 @@ public class PlayerMovement : MonoBehaviour
 
         HandleCamera();
 
+
        
-     
       
     }
 
@@ -218,26 +219,24 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!isGrounded && !wallRunning)
             return;
-       
 
-     
+
+
 
         jumpSensitivity = mouseSensitivity * jumpSensMultiplpication;
 
         if (playerControls.Player.Jump.WasPressedThisFrame())
         {
             allowGravity = true;
-            jumpForce = 15f;
+            shouldJump = true;
             airVelocity = moveDirection.normalized * currentSpeed;
-
-         
-
             verticalVelocity = jumpForce;
-            jumpForce = 0f;
 
+            StartCoroutine(ToggleBoolAfterDelay(0.3f, () => shouldJump = !shouldJump));
         }
+      
 
-       
+
     }
 
     private void HandleMovementStates()
@@ -265,7 +264,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 horizontalVelocity;
 
         playerVelocity = controller.velocity;
-       
+
         if (isSliding)
         {
             slideSpeed -= slideFriction * Time.deltaTime;
@@ -275,7 +274,7 @@ public class PlayerMovement : MonoBehaviour
                 StopSliding();
             }
 
-            if(!playerControls.Player.Crouch.IsPressed())
+            if (!playerControls.Player.Crouch.IsPressed())
             {
                 StopSliding();
             }
@@ -284,13 +283,20 @@ public class PlayerMovement : MonoBehaviour
         else if (isSprinting) targetSpeed = sprintSpeed;
 
 
-        else if (isCrouching) targetSpeed = crouchMovementSpeed;
+        else if (isCrouching && !wallRunning) targetSpeed = crouchMovementSpeed;
 
 
         else if (isWalking) targetSpeed = walkSpeed;
 
         else if (isAirborne) targetSpeed = currentSpeed;
-      
+
+        else if (wallRunning)
+        {
+             targetSpeed = sprintSpeed;
+             currentSpeed = wallRunSpeed;
+        }
+
+
         else targetSpeed = walkSpeed;
        
            
@@ -326,10 +332,10 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 finalVelocity = horizontalVelocity + Vector3.up * verticalVelocity;
 
-        Vector3 nonElevatedVelocity =  new Vector3(finalVelocity.x, finalVelocity.y * jumpForce, finalVelocity.z);
+        Vector3 nonElevatedVelocity =  new Vector3(finalVelocity.x,shouldJump ? finalVelocity.y : finalVelocity.y * 0, finalVelocity.z);
 
        if(!wallRunning) controller.Move(finalVelocity * Time.deltaTime);
-       else controller.Move( nonElevatedVelocity* Time.deltaTime);
+       else controller.Move( nonElevatedVelocity * Time.deltaTime);
     }
 
     private void HandleLook()
@@ -519,6 +525,13 @@ public class PlayerMovement : MonoBehaviour
     {
         //nullfies the affect of the landing dip by adding the value to the landingDipOffset
         landingDipOffset += landingDipAmount;
+    }
+
+    private IEnumerator ToggleBoolAfterDelay(float delay, System.Action ToggleBool)
+    {
+        yield return new WaitForSeconds(delay);
+
+        ToggleBool();
     }
 }
 

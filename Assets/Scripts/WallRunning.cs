@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class WallRunning : MonoBehaviour
 {
@@ -6,17 +7,17 @@ public class WallRunning : MonoBehaviour
     public LayerMask whatIsGround;
     public LayerMask whatIsWall;
 
+    public bool allowedToWallRun = true;
     public float wallRunForce;
     public float maxWallRunTime;
-    private float wallRunTimer;
+    public float wallRunTimer = 2f;
     public float wallJumpForce = 4f;
 
     public float leftRotation = -15f;
     public float rightRotation = 15f;
 
-    [Header("Input")]
-    private float horizontalInput;
-    private float verticalInput;
+    private Coroutine wallRunningCoroutine;
+   
 
     [Header("Detection")]
     public float wallCheckDistance = 7f;
@@ -46,6 +47,8 @@ public class WallRunning : MonoBehaviour
 
         leftRotation = Mathf.Clamp(leftRotation, -15f, 0);
         rightRotation = Mathf.Clamp(rightRotation, 0, 15f);
+
+        if (pm.isGrounded) allowedToWallRun = true;
     }
 
     private void FixedUpdate()
@@ -81,13 +84,24 @@ public class WallRunning : MonoBehaviour
     }
     private void StartWallRun()
     {
-       pm.wallRunning = true;
+        if (!allowedToWallRun)
+            return;
+
+        pm.wallRunning = true;
         pm.allowGravity = false;
-        Debug.Log("WallRunning started");
+
+        Debug.Log("Start wallrun");
+        StartCoroutine(WallRunTimer());
+
+
+        wallRunningCoroutine = StartCoroutine(WallRunTimer());
     }
 
     private void WallRunningMovement()
     {
+       
+
+
         Vector3 wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
 
         Vector3 wallForward = Vector3.Cross(wallNormal, transform.up);
@@ -103,13 +117,26 @@ public class WallRunning : MonoBehaviour
     {
         pm.wallRunning = false;
         pm.allowGravity = true;
+       
+
+       if(wallRunningCoroutine != null) StopCoroutine(wallRunningCoroutine);
     }
 
-    private void WallJump()
+    private IEnumerator ToggleBoolAfterDelay(float delay, System.Action ToggleBool)
     {
-        Vector3 wallNormal = wallRight ? rightWallHit.normal : leftWallHit.normal;
+        yield return new WaitForSeconds(delay);
 
-        Vector3 forceToApply = transform.up * wallJumpForce + wallNormal * wallJumpForce;
+        ToggleBool();
+    }
+
+    private IEnumerator WallRunTimer()
+    {
+        yield return new WaitForSeconds(wallRunTimer);
+
+        allowedToWallRun = false;
+
+        wallRunningCoroutine = null;
+
     }
 
 }
