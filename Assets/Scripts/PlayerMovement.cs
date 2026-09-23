@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// CURRENT PROBLEMS: Player can double jump if they are on a runnable wall. player cannot wall jump between walls for more than 2 seconds. the value needs t be reset after every wall
+// CURRENT PROBLEMS: Player can jump up whilst on wall and levetate even if alowed to wall run is false
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     private HeadBob headBob;
     private Camera camera;
+    private WallRunning wRunning;
 
 
     private Vector2 moveInput;
@@ -48,6 +49,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpSpeed;
     [SerializeField] private float currentSpeed;
     [SerializeField] private float targetSpeed;
+
+    public int jumpCounter;
     public float wallRunSpeed;
     public bool wallRunning;
    
@@ -129,6 +132,8 @@ public class PlayerMovement : MonoBehaviour
 
         headBob = GetComponentInChildren<HeadBob>();
 
+        wRunning = GetComponent<WallRunning>();
+
         camera = Camera.main;
 
         cameraTransform = Camera.main.transform;
@@ -192,7 +197,7 @@ public class PlayerMovement : MonoBehaviour
         HandleCamera();
 
 
-       
+        if (isGrounded) jumpCounter = 0;
       
     }
 
@@ -212,6 +217,8 @@ public class PlayerMovement : MonoBehaviour
 
             if (controller.isGrounded && verticalVelocity < 0)
                 verticalVelocity = -2;
+
+            if(wallRunning && !playerControls.Player.Jump.WasPressedThisFrame() && !shouldJump) verticalVelocity = 0;
         }
     }
 
@@ -220,8 +227,10 @@ public class PlayerMovement : MonoBehaviour
         if (!isGrounded && !wallRunning)
             return;
 
+        //if (wallRunning && wRunning.lookinAtWall || jumpCounter > 0)
+        //    return;
 
-
+        
 
         jumpSensitivity = mouseSensitivity * jumpSensMultiplpication;
 
@@ -231,7 +240,8 @@ public class PlayerMovement : MonoBehaviour
             shouldJump = true;
             airVelocity = moveDirection.normalized * currentSpeed;
             verticalVelocity = jumpForce;
-
+            jumpCounter++;
+            if (isGrounded) jumpCounter--;
             StartCoroutine(ToggleBoolAfterDelay(0.3f, () => shouldJump = !shouldJump));
         }
       
@@ -250,11 +260,11 @@ public class PlayerMovement : MonoBehaviour
 
         if(isGrounded && hasMovementInput && sprintHeld && crouchHeld && !isSliding) StartSlide();
 
-
+       
 
         isWalking = isGrounded && hasMovementInput && !isSprinting && !isCrouching;
 
-        isAirborne = !isGrounded;
+        isAirborne = !isGrounded && !wallRunning;
 
       
     }

@@ -8,9 +8,10 @@ public class WallRunning : MonoBehaviour
     public LayerMask whatIsWall;
 
     public bool allowedToWallRun = true;
+    public bool lookinAtWall = false;
     public float wallRunForce;
     public float maxWallRunTime;
-    public float wallRunTimer = 2f;
+    public float wrTimer = 2f; // There is a function called WallRunTimer. I need a variable with the same name so i have abreviated the timer variable to wrTimer.
     public float wallJumpForce = 4f;
 
     public float leftRotation = -15f;
@@ -21,6 +22,7 @@ public class WallRunning : MonoBehaviour
 
     [Header("Detection")]
     public float wallCheckDistance = 7f;
+    public float wallLookDistance = 5f;
     public float minJumpHeight;
 
     private RaycastHit leftWallHit;
@@ -44,7 +46,8 @@ public class WallRunning : MonoBehaviour
     {
         CheckForWall();
         StateMachine();
-
+        FacingWall();
+       
         leftRotation = Mathf.Clamp(leftRotation, -15f, 0);
         rightRotation = Mathf.Clamp(rightRotation, 0, 15f);
 
@@ -89,8 +92,9 @@ public class WallRunning : MonoBehaviour
 
         pm.wallRunning = true;
         pm.allowGravity = false;
+        pm.isAirborne = false;
 
-        Debug.Log("Start wallrun");
+        Debug.Log("WR");
         StartCoroutine(WallRunTimer());
 
 
@@ -117,9 +121,9 @@ public class WallRunning : MonoBehaviour
     {
         pm.wallRunning = false;
         pm.allowGravity = true;
-       
 
-       if(wallRunningCoroutine != null) StopCoroutine(wallRunningCoroutine);
+        
+        if (wallRunningCoroutine != null) StopCoroutine(wallRunningCoroutine);
     }
 
     private IEnumerator ToggleBoolAfterDelay(float delay, System.Action ToggleBool)
@@ -131,12 +135,36 @@ public class WallRunning : MonoBehaviour
 
     private IEnumerator WallRunTimer()
     {
-        yield return new WaitForSeconds(wallRunTimer);
+
+        float timer = 0f;
+
+        while (timer < wrTimer)
+        {
+            if(pm.isAirborne)
+            {
+                wallRunningCoroutine = null;
+                yield break;
+            }
+
+            timer += Time.deltaTime;
+
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(wrTimer);
 
         allowedToWallRun = false;
-
         wallRunningCoroutine = null;
 
+    }
+
+    private void FacingWall()
+    {
+
+        Ray ray = new Ray(transform.position, transform.forward);
+
+        RaycastHit hit;
+       lookinAtWall = Physics.Raycast(ray, out hit, wallLookDistance, whatIsWall);
     }
 
 }
