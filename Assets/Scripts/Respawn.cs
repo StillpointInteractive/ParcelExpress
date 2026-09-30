@@ -31,11 +31,13 @@ public class Respawn : MonoBehaviour
     {
        
         if(respawnPoint != null)
-        if (playerMovement.verticalVelocity <= maxFallVelocity && playerMovement.isGrounded)
         {
-           
-            RespawnPlayer();
-            GameManager.Instance.playerLives--;
+            if (playerMovement.verticalVelocity <= maxFallVelocity && playerMovement.isGrounded)
+            {
+
+                RespawnPlayer();
+                GameManager.Instance.playerLives--;
+            }
         }
 
        
@@ -57,6 +59,7 @@ public class Respawn : MonoBehaviour
     private void RespawnPlayer()
     {
         player.transform.position = respawnPoint.transform.position;
+        player.transform.rotation = respawnPoint.transform.rotation;
         playerMovement.Respawn();
     }
 }

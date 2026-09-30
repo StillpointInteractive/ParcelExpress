@@ -39,8 +39,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float crouchMovementSpeed = 2.5f;
     [SerializeField] private float walkSpeed = 5f;
     [SerializeField] private float sprintSpeed = 10f;
+   
     [SerializeField] private float sprintAcceleration = 12f;
     [SerializeField] private float sprintDeceleration = 20f;
+    [SerializeField] private float wallSprintAcceleration = 18f;
+    [SerializeField] private float wallSprintDeceleration = 25f;
     [SerializeField] private float accelOrDeceleration;
     [SerializeField] private float airAcceleration = 5f;
     [SerializeField] private Vector3 playerVelocity;
@@ -177,7 +180,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        wallRunSpeed = currentSpeed;
+       
 
         GetInput();
 
@@ -302,8 +305,8 @@ public class PlayerMovement : MonoBehaviour
 
         else if (wallRunning)
         {
-             targetSpeed = sprintSpeed;
-             currentSpeed = wallRunSpeed;
+             targetSpeed = wallRunSpeed;
+             
         }
 
 
@@ -311,15 +314,17 @@ public class PlayerMovement : MonoBehaviour
        
            
 
-        if (currentSpeed < targetSpeed) accelOrDeceleration = sprintAcceleration;
+      
 
-        else if (currentSpeed > targetSpeed) accelOrDeceleration = sprintDeceleration;
+       if(isGrounded) accelOrDeceleration = currentSpeed < targetSpeed ? sprintAcceleration : sprintDeceleration;
+        else if (wallRunning || isAirborne) accelOrDeceleration = currentSpeed < targetSpeed ? wallSprintAcceleration : wallSprintDeceleration;
 
 
-        currentSpeed = Mathf.MoveTowards(
-            currentSpeed,
-            targetSpeed,
-            accelOrDeceleration * Time.deltaTime);
+
+            currentSpeed = Mathf.MoveTowards(
+                currentSpeed,
+                targetSpeed,
+                accelOrDeceleration * Time.deltaTime);
 
         moveDirection = transform.right * moveInput.x + transform.forward * moveInput.y;
 

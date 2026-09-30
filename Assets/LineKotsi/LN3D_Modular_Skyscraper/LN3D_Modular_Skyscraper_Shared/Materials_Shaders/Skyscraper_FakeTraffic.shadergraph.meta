@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 3e640e80c36be67439ee80c6f4e6994c
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 625f186215c104763be7675aa2d941aa, type: 3}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 285915
+  packageName: Modular Modern Skyscraper Vol 1
+  packageVersion: 1.0
+  assetPath: Assets/LineKotsi/LN3D_Modular_Skyscraper/LN3D_Modular_Skyscraper_Shared/Materials_Shaders/Skyscraper_FakeTraffic.shadergraph
+  uploadId: 668401

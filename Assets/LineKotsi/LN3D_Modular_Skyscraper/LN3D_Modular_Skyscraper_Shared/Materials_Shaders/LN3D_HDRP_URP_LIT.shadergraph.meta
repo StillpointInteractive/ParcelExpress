@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 1872c477ae848dd4ab1234beb4fb76d3
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 625f186215c104763be7675aa2d941aa, type: 3}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 285915
+  packageName: Modular Modern Skyscraper Vol 1
+  packageVersion: 1.0
+  assetPath: Assets/LineKotsi/LN3D_Modular_Skyscraper/LN3D_Modular_Skyscraper_Shared/Materials_Shaders/LN3D_HDRP_URP_LIT.shadergraph
+  uploadId: 668401
