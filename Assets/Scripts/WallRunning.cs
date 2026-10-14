@@ -8,14 +8,14 @@ public class WallRunning : MonoBehaviour
     public LayerMask whatIsWall;
 
     public bool allowedToWallRun = true;
+    public bool isWallRunning = false;
     public bool lookinAtWall = false;
     public float wallRunForce;
     public float maxWallRunTime;
     public float wrTimer = 2f; // There is a function called WallRunTimer. I need a variable with the same name so i have abreviated the timer variable to wrTimer.
     public float wallJumpForce = 4f;
 
-    public float leftRotation = -15f;
-    public float rightRotation = 15f;
+   
 
     private Coroutine wallRunningCoroutine;
    
@@ -28,18 +28,20 @@ public class WallRunning : MonoBehaviour
     private RaycastHit leftWallHit;
     private RaycastHit rightWallHit;
 
-   [SerializeField] private bool wallLeft;
-    [SerializeField] private bool wallRight;
+   public bool wallLeft;
+   public bool wallRight;
 
     [Header("References")]
     public Transform orientation;
     private PlayerMovement pm;
+    public Camera camera;
 
     private void Awake()
     {
         GameObject player = GameObject.Find("Player");
         pm = player.GetComponent<PlayerMovement>();
         orientation = player.GetComponent<Transform>();
+        camera = Camera.main;
     }
 
     private void Update()
@@ -48,8 +50,7 @@ public class WallRunning : MonoBehaviour
         StateMachine();
         FacingWall();
        
-        leftRotation = Mathf.Clamp(leftRotation, -15f, 0);
-        rightRotation = Mathf.Clamp(rightRotation, 0, 15f);
+        
 
         if (pm.isGrounded) allowedToWallRun = true;
     }
@@ -90,6 +91,7 @@ public class WallRunning : MonoBehaviour
         if (!allowedToWallRun)
             return;
 
+        isWallRunning = true;
         pm.wallRunning = true;
         pm.allowGravity = false;
         pm.isAirborne = false;
@@ -119,6 +121,7 @@ public class WallRunning : MonoBehaviour
 
     private void StopWallRun()
     {
+        isWallRunning = false;
         pm.wallRunning = false;
         pm.allowGravity = true;
 
@@ -166,5 +169,7 @@ public class WallRunning : MonoBehaviour
         RaycastHit hit;
        lookinAtWall = Physics.Raycast(ray, out hit, wallLookDistance, whatIsWall);
     }
+
+    
 
 }

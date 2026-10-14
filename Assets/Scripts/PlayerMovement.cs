@@ -98,6 +98,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float slidingHeadBobSpeed;
 
     [Header("Camera")]
+    [SerializeField] private float cameraTilt;
+    public float leftWallRotation = -15f;
+    public float rightWallRotation = 15f;
+
     [SerializeField] private float normalFOV = 80f;
     [SerializeField] private float sprintFov = 90f;
     [SerializeField] private float fovChangeSpeed = 8f;
@@ -374,7 +378,7 @@ public class PlayerMovement : MonoBehaviour
 
           
         xRotation = Mathf.Clamp(xRotation, -50f, 50f); 
-        cameraTransform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+        cameraTransform.localRotation = Quaternion.Euler(xRotation, 0, 0f);
     }
 
     private void HandleCrouch()
@@ -434,7 +438,12 @@ public class PlayerMovement : MonoBehaviour
 
         cameraTransform.localPosition = cameraPosition;
 
-       
+        if (wallRunning && wRunning.wallLeft) cameraTilt = leftWallRotation;
+        else if (wallRunning && wRunning.wallRight) cameraTilt = rightWallRotation;
+        else
+        {
+            cameraTilt = 0f;
+        }
 
         // Change headbobbing to the sliding headBob speed
 
@@ -460,7 +469,7 @@ public class PlayerMovement : MonoBehaviour
             hasMultipliedValue = false;
         }
 
-        // Change fov when sprinting
+       // Change fov when sprinting
 
         float targetFov = isSprinting ? sprintFov : normalFOV;
 

@@ -195,8 +195,8 @@ MonoBehaviour:
   active: 1
   Settings:
     volumetrics: 1
-    steps: 32
-    quality: 1
+    steps: 64
+    quality: 2
     scattering: 0.195
     scatteringMultiplier:
       serializedVersion: 2
@@ -252,7 +252,7 @@ MonoBehaviour:
     fog: 1
     fogQualityMode: 0
     floatingPointOriginMod: {x: 0, y: 0, z: 0}
-    globalFogHeight: 400
+    globalFogHeight: 446.71
     fogDensity: 0.153
     fogHeightFalloff: 0.0059
     fogHeight: 0
@@ -339,6 +339,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   customFogDensityModifer: 1
   fogMat: {fileID: 0}
   volumetricsMat: {fileID: 0}
@@ -379,7 +382,7 @@ MonoBehaviour:
     defaultSkyReflectionTex: {fileID: 0}
   preset: {fileID: 11400000, guid: da668770e38694d49af97ecfd05fd7eb, type: 2}
   showReflectionControls: 1
-  lastReflectionUpdate: 20.025
+  lastReflectionUpdate: 6.025
   lastReflectionUpdatePos: {x: 0, y: 0, z: 0}
 --- !u!114 &-2780709178333184838
 MonoBehaviour:
@@ -2008,7 +2011,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    temperature: 6.78124
+    temperature: 7.562107
     temperatureWeatherMod: 0
     temperatureCustomMod: 0
     temperatureChangingSpeed: 0.1
@@ -3944,11 +3947,11 @@ MonoBehaviour:
     simulate: 0
     secSerial: 0
     minSerial: 0
-    hourSerial: 20
+    hourSerial: 6
     daySerial: 21
     monthSerial: 3
     yearSerial: 2026
-    timeOfDay: 20
+    timeOfDay: 6
     latitude: 0
     longitude: 0
     utcOffset: 0
@@ -3963,7 +3966,7 @@ MonoBehaviour:
   preset: {fileID: 11400000, guid: 82acdd278499d74498ad37dd931734d1, type: 2}
   showTimeControls: 1
   showLocationControls: 0
-  LST: 119.35339
+  LST: 268.77814
 --- !u!114 &4011421771873438716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4020,7 +4023,7 @@ MonoBehaviour:
     auroraContrast: 10
     auroraHeight: 20000
     auroraScale: 0.01
-    auroraSteps: 24
+    auroraSteps: 32
     auroraLayer1Settings: {x: 0.1, y: 0.1, z: 0, w: 0.5}
     auroraLayer2Settings: {x: 5, y: 5, z: 0, w: 0.5}
     auroraColorshiftSettings: {x: 0.05, y: 0.05, z: 0, w: 5}
@@ -4409,7 +4412,7 @@ MonoBehaviour:
     flatCloudsLightIntensity: 0.932
     flatCloudsAmbientIntensity: 1.319
     flatCloudsShadowIntensity: 0.947
-    flatCloudsShadowSteps: 8
+    flatCloudsShadowSteps: 6
     flatCloudsHGPhase: 0.8
     flatCloudsCoverage: 1.328
     flatCloudsDensity: 1.104
@@ -4422,9 +4425,9 @@ MonoBehaviour:
   preset: {fileID: 11400000, guid: 0fcdd472bd6a8ec429fc1e9bc978c4fa, type: 2}
   showCirrusCloudsControls: 1
   show2DCloudsControls: 0
-  cloudFlatBaseAnim: {x: -0.7993002, y: -0.26689768}
-  cloudFlatDetailAnim: {x: 0.0034713743, y: 0.66459465}
-  cirrusAnim: {x: -0.3996501, y: -0.13343021}
+  cloudFlatBaseAnim: {x: 0.65155023, y: 0.28232214}
+  cloudFlatDetailAnim: {x: -0.7324493, y: -0.5929028}
+  cirrusAnim: {x: 0.3256601, y: -0.8587264}
 --- !u!114 &6137975383063632260
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5049,11 +5052,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 456bf221b186fde4096dcf2c1841b35a, type: 3}
   m_Name: Quality Module
   m_EditorClassIdentifier: 
-  showModuleInspector: 0
+  showModuleInspector: 1
   showSaveLoad: 0
   active: 1
   Settings:
-    defaultQuality: {fileID: 11400000, guid: 60e887b1524da0a4a8f1318ef102e22a, type: 2}
+    defaultQuality: {fileID: 11400000, guid: ce2712a713d73094fa9c2775886f182d, type: 2}
     Qualities:
     - {fileID: 11400000, guid: a002704085c17f1439758fcee25df529, type: 2}
     - {fileID: 11400000, guid: 2e0aaa075bca92245a9e8300b7eace9c, type: 2}
@@ -5302,13 +5305,13 @@ MonoBehaviour:
   settingsQuality:
     volumetricClouds: 1
     lightningSupport: 1
-    variableBottomNoise: 0
-    downsampling: 2
-    stepsLayer1: 128
+    variableBottomNoise: 1
+    downsampling: 1
+    stepsLayer1: 256
     stepsLayer2: 64
     blueNoiseIntensity: 2
-    reprojectionBlendTime: 2
-    lodDistance: 0.6
+    reprojectionBlendTime: 1
+    lodDistance: 1
   preset: {fileID: 11400000, guid: 4b3879673bba3ff488a4b539b4de69b7, type: 2}
   showGlobalControls: 1
   showVolumeSettings: 1
@@ -5317,8 +5320,8 @@ MonoBehaviour:
   showDensityControls: 1
   showTextureControls: 0
   showWindControls: 0
-  cloudAnimLayer1: {x: 0.01434611, y: 0.59425384, z: -0.7570484}
+  cloudAnimLayer1: {x: -0.7287632, y: -0.6613875, z: -0.57415384}
   cloudAnimLayer2: {x: 0, y: 0, z: 0}
-  cloudAnimNonScaledLayer1: {x: -0.012664722, y: 0.05863426, z: -1.6941038}
+  cloudAnimNonScaledLayer1: {x: -0.03886326, y: 0.08483323, z: -1.8251392}
   cloudAnimNonScaledLayer2: {x: 0, y: 0, z: 0}
   weatherMap: {fileID: 0}
