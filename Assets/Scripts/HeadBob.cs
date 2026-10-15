@@ -7,7 +7,7 @@ public class HeadBob : MonoBehaviour
     private float wavePosition;
     [SerializeField] private float idleBobSpeed = 2f;
     [SerializeField] private float walkBobSpeed = 3f;
-    public float sprintBobSpeed = 4f;
+    [SerializeField] private float sprintBobSpeed = 4f;
     [SerializeField] private float currentBobSpeed = 0f;
 
     [SerializeField] private float idleBobHeight = 0.05f;

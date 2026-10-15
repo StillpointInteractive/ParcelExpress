@@ -168,7 +168,7 @@ public class PlayerMovement : MonoBehaviour
 
         jumpSpeed = sprintSpeed;
 
-        prevHeadBobSpeed = headBob.sprintBobSpeed;
+       // prevHeadBobSpeed = headBob.sprintBobSpeed;
 
         prevLandingDipAmount = landingDipAmount;
 
@@ -449,8 +449,8 @@ public class PlayerMovement : MonoBehaviour
 
         if (headBob != null)
         {
-            float headBobSpeed = headBob.sprintBobSpeed;
-            slidingHeadBobSpeed = headBobSpeed;
+           // float headBobSpeed = headBob.sprintBobSpeed;
+           // slidingHeadBobSpeed = headBobSpeed;
         }
       
         if (isSliding)
@@ -459,13 +459,13 @@ public class PlayerMovement : MonoBehaviour
             if(!hasMultipliedValue) slidingHeadBobSpeed *= headBobMultiplier;
 
             hasMultipliedValue = true;
-            headBob.sprintBobSpeed = slidingHeadBobSpeed;
-            headBob.sprintBobSpeed =
-                Mathf.Clamp(headBob.sprintBobSpeed, prevHeadBobSpeed, slidingHeadBobSpeed);
+            //headBob.sprintBobSpeed = slidingHeadBobSpeed;
+           // headBob.sprintBobSpeed =
+               // Mathf.Clamp(headBob.sprintBobSpeed, prevHeadBobSpeed, slidingHeadBobSpeed);
         }
         else
         {
-            headBob.sprintBobSpeed = prevHeadBobSpeed;
+          //  headBob.sprintBobSpeed = prevHeadBobSpeed;
             hasMultipliedValue = false;
         }
 
