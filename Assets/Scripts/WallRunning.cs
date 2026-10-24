@@ -14,7 +14,7 @@ public class WallRunning : MonoBehaviour
     public float maxWallRunTime;
     public float wrTimer = 2f; // There is a function called WallRunTimer. I need a variable with the same name so i have abreviated the timer variable to wrTimer.
     public float wallJumpForce = 4f;
-
+    public float wallLeanAmount;
    
 
     private Coroutine wallRunningCoroutine;
@@ -46,11 +46,12 @@ public class WallRunning : MonoBehaviour
 
     private void Update()
     {
+        RotateCamera();
         CheckForWall();
         StateMachine();
         FacingWall();
        
-        
+      
 
         if (pm.isGrounded) allowedToWallRun = true;
     }
@@ -96,7 +97,7 @@ public class WallRunning : MonoBehaviour
         pm.allowGravity = false;
         pm.isAirborne = false;
 
-        Debug.Log("WR");
+        
         StartCoroutine(WallRunTimer());
 
 
@@ -168,6 +169,15 @@ public class WallRunning : MonoBehaviour
 
         RaycastHit hit;
        lookinAtWall = Physics.Raycast(ray, out hit, wallLookDistance, whatIsWall);
+    }
+
+    private void RotateCamera()
+    {
+        if (wallLeft) wallLeanAmount = -15f;
+        else if (wallRight) wallLeanAmount = 15f;
+        else wallLeanAmount = 0f;
+
+       
     }
 
     

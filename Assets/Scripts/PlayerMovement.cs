@@ -357,6 +357,8 @@ public class PlayerMovement : MonoBehaviour
        else controller.Move( nonElevatedVelocity * Time.deltaTime);
     }
 
+    public float wallRunRotateAmount = 7f;
+    private float currentWallLean = 0f;
     private void HandleLook()
     {
         if (isAirborne)
@@ -376,9 +378,20 @@ public class PlayerMovement : MonoBehaviour
             xRotation -= lookInput.y * slideSensitivity;
         }
 
-          
-        xRotation = Mathf.Clamp(xRotation, -50f, 50f); 
-        cameraTransform.localRotation = Quaternion.Euler(xRotation, 0, 0f);
+
+        xRotation = Mathf.Clamp(xRotation, -50f, 50f);
+
+        currentWallLean = Mathf.LerpAngle(
+            currentWallLean,
+            wRunning.wallLeanAmount,
+            wallRunRotateAmount * Time.deltaTime
+        );
+
+        cameraTransform.localRotation = Quaternion.Euler(
+            xRotation,
+            0f,
+            currentWallLean
+        );
     }
 
     private void HandleCrouch()
@@ -425,7 +438,7 @@ public class PlayerMovement : MonoBehaviour
     private bool hasMultipliedValue = false;
     private void HandleCamera()
     {
-
+        if (wallRunning) return;
         targetCameraHeight = isCrouching ? crouchingCameraHeight : standingCameraHeight;
 
         landingDipOffset = Mathf.MoveTowards(landingDipOffset, 0f, landingDipRecoverySpeed * Time.deltaTime);

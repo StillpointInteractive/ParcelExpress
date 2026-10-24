@@ -12,7 +12,8 @@ public class Respawn : MonoBehaviour
 
   
 
-    [SerializeField] private GameObject respawnPointObj;
+   public GameObject respawnPointObj;
+    public bool shouldRespawnNow = false;
 
     private void Awake()
     {
@@ -29,6 +30,11 @@ public class Respawn : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (shouldRespawnNow)
+        {
+            RespawnPlayer();
+            shouldRespawnNow = false;
+        }
        
         if(respawnPoint != null)
         {

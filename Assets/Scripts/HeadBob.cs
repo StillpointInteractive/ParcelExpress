@@ -38,7 +38,7 @@ public class HeadBob : MonoBehaviour
 
     private void Update()
     {
-
+        if (PlayerMovement.wallRunning) return;
         if (PlayerMovement != null)
         {
             if (PlayerMovement.isWalking)
