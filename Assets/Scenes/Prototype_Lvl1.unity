@@ -27248,6 +27248,27 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ec5e28b3dd791f44eb5504e162a27330, type: 3}
+--- !u!1 &499234003 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8051724220661396340, guid: ac634dc3bf9d4c740997ad22a9e1fd31, type: 3}
+  m_PrefabInstance: {fileID: 692579964}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &499234008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 499234003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e87731653f30cc44b82fe5fb56e226b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprintBlurMaterial: {fileID: 2100000, guid: 834943b1fe792174abed1191693a963f, type: 2}
+  maxBlurStrength: 0.6
+  fadeInSpeed: 2
+  fadeOutSpeed: 3
 --- !u!4 &507526125 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8578420359508454451, guid: cf466a613f045d443b6d63b3788a75a9, type: 3}
@@ -30036,7 +30057,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8051724220661396340, guid: ac634dc3bf9d4c740997ad22a9e1fd31, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 499234008}
   m_SourcePrefab: {fileID: 100100000, guid: ac634dc3bf9d4c740997ad22a9e1fd31, type: 3}
 --- !u!1001 &699413173
 PrefabInstance:
@@ -66137,7 +66161,7 @@ MonoBehaviour:
   isNight: 1
   solarTime: 0.13758938
   lunarTime: 0.815213
-  notFirstFrame: 1
+  notFirstFrame: 0
   removalZones: []
   sunRotationX: 0
   sunRotationY: 0

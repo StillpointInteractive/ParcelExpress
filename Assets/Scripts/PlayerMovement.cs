@@ -12,7 +12,7 @@ public class PlayerMovement : MonoBehaviour
     private HeadBob headBob;
     private Camera camera;
     private WallRunning wRunning;
-
+    private GameObject GameManager;
 
     private Vector2 moveInput;
     private Vector2 lookInput;
@@ -129,8 +129,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
    public bool isGrounded;
 
+    [SerializeField] private SprintBlurController sprintBlur;
     private void Awake()
     {
+
+        GameManager = GameObject.Find("GameManager");
         controller = GetComponent<CharacterController>();
 
         playerControls = new PlayerControls();
@@ -144,6 +147,10 @@ public class PlayerMovement : MonoBehaviour
         camera = Camera.main;
 
         cameraTransform = Camera.main.transform;
+
+        sprintBlur = GameManager.GetComponent<SprintBlurController>();
+
+        
     }
 
     private void OnEnable()
@@ -196,6 +203,8 @@ public class PlayerMovement : MonoBehaviour
         HandleCrouch();
 
         HandleMovement();
+
+       if (sprintBlur != null) { sprintBlur.SetSprinting(isSprinting); Debug.Log("MotionBlurActive"); } 
 
         HandleLook();
 
