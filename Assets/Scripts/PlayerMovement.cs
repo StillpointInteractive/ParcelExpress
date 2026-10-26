@@ -204,8 +204,6 @@ public class PlayerMovement : MonoBehaviour
 
         HandleMovement();
 
-       if (sprintBlur != null) { sprintBlur.SetSprinting(isSprinting); Debug.Log("MotionBlurActive"); } 
-
         HandleLook();
 
         CheckIfGrounded();

@@ -5,6 +5,7 @@ public class PlayerInteract : MonoBehaviour
 {
     [Header("ParcelHoldPositions")]
     [SerializeField] private Transform smallParcelHoldPoint;
+    [SerializeField] private Transform smallParcelHoldPointLeft;
     [SerializeField] private Transform mediumParcelHoldPoint;
     [SerializeField] private Transform largeParcelHoldPoint;
 
@@ -13,6 +14,8 @@ public class PlayerInteract : MonoBehaviour
 
     private GameObject gManager;
     private ParcelManager pManager;
+    private WallRunning wRunning;
+    private GameObject player;
 
     public Parcel heldParcel;
     public Transform cameraPos;
@@ -21,9 +24,10 @@ public class PlayerInteract : MonoBehaviour
 
     private void Awake()
     {
-
+        player = GameObject.Find("Player");
         gManager = GameObject.Find("GameManager");
         pManager = gManager.GetComponent<ParcelManager>();
+        wRunning = player.GetComponent<WallRunning>();
     }
     private void Start()
     {
@@ -33,6 +37,7 @@ public class PlayerInteract : MonoBehaviour
     {
         currentlyLookingAtParcel = false;
         IsLookingAtParcel();
+       if(heldParcel != null) ManagerParcelPos(heldParcel);
 
         if (Keyboard.current.eKey.wasPressedThisFrame) TryPickUp();
   
@@ -99,9 +104,10 @@ public class PlayerInteract : MonoBehaviour
 
         if(parcel.CompareTag("SmallParcel"))
         {
-            parcel.transform.position = smallParcelHoldPoint.position;
-            parcel.transform.parent = smallParcelHoldPoint;
-           
+          
+                parcel.transform.position = smallParcelHoldPoint.position;
+                parcel.transform.parent = smallParcelHoldPoint;
+             
         }
         else if (parcel.CompareTag("MediumParcel"))
         {
@@ -134,5 +140,39 @@ public class PlayerInteract : MonoBehaviour
         parcel.transform.SetParent(null);
 
         heldParcel = null;
+    }
+
+    private void ManagerParcelPos(Parcel parcel)
+    {
+
+        // Debug.Log("Wall Left: " + wRunning.wallLeft + " | Wall Right: " + wRunning.wallRight);
+
+
+
+
+        if ( wRunning.wallRight)
+        {
+            parcel.transform.position = smallParcelHoldPointLeft.position;
+            parcel.transform.parent = smallParcelHoldPointLeft;
+            Debug.Log("ParcelPositionLeft");
+        }
+
+        else if ( wRunning.wallLeft)
+        {
+            parcel.transform.position = smallParcelHoldPoint.position;
+            parcel.transform.parent = smallParcelHoldPoint;
+            Debug.Log("ParcelPositionRight");
+        }
+        else
+        {
+
+        }
+
+
+          
+
+
+
+        
     }
 }

@@ -50,8 +50,9 @@ public class WallRunning : MonoBehaviour
         CheckForWall();
         StateMachine();
         FacingWall();
-       
-      
+
+        if (wallLeft) Debug.Log("allLeft");
+        if (wallRight) Debug.Log("allright");
 
         if (pm.isGrounded) allowedToWallRun = true;
     }
