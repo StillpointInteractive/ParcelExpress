@@ -9,13 +9,17 @@ public class PlayerInteract : MonoBehaviour
     [SerializeField] private Transform mediumParcelHoldPoint;
     [SerializeField] private Transform largeParcelHoldPoint;
 
+    [SerializeField] private Vector3 smallParcelStartingPosition;
+
 
     [SerializeField] private float interactRange = 5f;
 
+    // references
     private GameObject gManager;
     private ParcelManager pManager;
     private WallRunning wRunning;
     private GameObject player;
+    private PlayerMovement pMovement;
 
     public Parcel heldParcel;
     public Transform cameraPos;
@@ -28,10 +32,11 @@ public class PlayerInteract : MonoBehaviour
         gManager = GameObject.Find("GameManager");
         pManager = gManager.GetComponent<ParcelManager>();
         wRunning = player.GetComponent<WallRunning>();
+        pMovement = player.GetComponent<PlayerMovement>();
     }
     private void Start()
     {
-       
+        
     }
     private void Update()
     {
@@ -113,6 +118,7 @@ public class PlayerInteract : MonoBehaviour
         {
             parcel.transform.position = mediumParcelHoldPoint.position;
             parcel.transform.parent = mediumParcelHoldPoint;
+          
         }
         else if (parcel.CompareTag("LargeParcel"))
         {
@@ -157,17 +163,13 @@ public class PlayerInteract : MonoBehaviour
             Debug.Log("ParcelPositionLeft");
         }
 
-        else if ( wRunning.wallLeft)
+        else  if(pMovement.isGrounded)
         {
             parcel.transform.position = smallParcelHoldPoint.position;
             parcel.transform.parent = smallParcelHoldPoint;
             Debug.Log("ParcelPositionRight");
         }
-        else
-        {
-
-        }
-
+       
 
           
 

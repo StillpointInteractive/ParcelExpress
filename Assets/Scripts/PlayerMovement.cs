@@ -280,6 +280,8 @@ public class PlayerMovement : MonoBehaviour
 
         isAirborne = !isGrounded && !wallRunning;
 
+        if(isSliding) isSprinting = false;
+
       
     }
 
