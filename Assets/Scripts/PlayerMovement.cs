@@ -549,6 +549,7 @@ public class PlayerMovement : MonoBehaviour
         Ray ray = new Ray(transform.position, transform.up * -1);
         RaycastHit hit;
 
+        Debug.DrawRay(transform.position, transform.up * -1 * rayCastRange);
 
          bool currentlyGrounded = Physics.Raycast(ray, out hit, rayCastRange, groundLayer);
 
