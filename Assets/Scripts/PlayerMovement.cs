@@ -127,7 +127,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("GroundCheck")]
     [SerializeField] private float rayCastRange = 2f;
     [SerializeField] private LayerMask groundLayer;
-   public bool isGrounded;
+    public bool isGrounded;
 
     [SerializeField] private SprintBlurController sprintBlur;
     private void Awake()

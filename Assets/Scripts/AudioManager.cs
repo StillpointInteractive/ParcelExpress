@@ -7,6 +7,19 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private PlayerMovement pMovement;
     [SerializeField] private AudioSource walkingFootsteps;
     [SerializeField] private AudioSource sprintingFootsteps;
+
+    private PlayerControls playerControls;
+
+    [Header("Footstep Audio Cues")]
+    [SerializeField] private AudioSource walkingSource;
+    [SerializeField] private AudioClip[] walkingClips;
+    [SerializeField] private AudioSource jumpingSource;
+
+    [Header("Movement time intervals")]
+    [SerializeField] private float walkingStepInterval = 0.45f;
+    [SerializeField] private float sprintingStepInterval = 0.25f;
+
+    private float footstepTimer = 0f;
     private void InitialiseReferences()
     {
         GameObject gmanagerObj = GameObject.Find("GameManager");
@@ -18,34 +31,68 @@ public class AudioManager : MonoBehaviour
 
     private void ManageAudio()
     {
-        // manage walking audio
-        if (pMovement.isWalking)
-        {
-           if(!walkingFootsteps.isPlaying) walkingFootsteps.Play(); 
-        }
-        else walkingFootsteps.Stop();
+        // Handles the walking and running footsteps
+        HandleFootsteps();
 
-        // manage sprinting audio
-        if (pMovement.isSprinting)
+        if(playerControls.Player.Jump.WasPressedThisFrame())
         {
-            if (!sprintingFootsteps.isPlaying) sprintingFootsteps.Play();
+            PlayJumpingSound(); 
         }
-        else sprintingFootsteps.Stop();
+    }
+
+    private void PlayWalkingFootsteps()
+    {
+        int randomIndex = Random.Range(0, walkingClips.Length);
+
+        walkingFootsteps.PlayOneShot(walkingClips[randomIndex]);
+    }
+    private void PlayJumpingSound()
+    {
+        jumpingSource.Play();
     }
 
     private void OnValidate()
     {
         InitialiseReferences();
     }
-    private void OnAwake() 
+    private void Awake() 
     {
         InitialiseReferences();
+        playerControls = new PlayerControls();
     }
-  
+
+    private void OnEnable()
+    {
+        playerControls.Enable();
+    }
+    private void OnDisable()
+    {
+        playerControls.Disable();
+    }
+
+    private void HandleFootsteps()
+    {
+        if(!pMovement.isWalking && !pMovement.isSprinting)
+        {
+            footstepTimer = 0f;
+            return;
+        }
+
+        float stepInterval = pMovement.isSprinting ? sprintingStepInterval : walkingStepInterval;
+
+        footstepTimer -= Time.deltaTime;
+
+        if(footstepTimer <= 0f)
+        {
+            PlayWalkingFootsteps();
+            footstepTimer = stepInterval;
+        }
+    }
 
     // Update is called once per frame
     void Update()
     {
-        ManageAudio();
+          ManageAudio();
+        
     }
 }
